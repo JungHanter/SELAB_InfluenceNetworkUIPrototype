@@ -1,0 +1,83 @@
+.menu-group{
+    margin-bottom: 0px !important;
+    height: 75px !important;
+    min-height : 0px;
+    border-radius: 0px;
+    border-width: 1px;
+}
+
+.top-menu{
+    padding-left: 10px !important;
+}
+
+#edit-menu span{
+    padding : 5px 15px;
+}
+.menu-group .dropdown > a
+{
+    padding: 5px 15px;
+}
+
+#edit-name-text{
+    float : left;
+    padding: 10px 15px;
+}
+#edit-name-field{
+    float : left;
+    padding: 5px 0px;
+}
+
+.menu-group > .container-fluid, .edit-menu > .container-fluid{
+    padding-left: 0px;
+}
+#edit-type-text{
+    float : left;
+    padding: 10px 15px;
+}
+.btn-group{
+    padding-top: 5px;
+}
+
+.side-menu{
+    width: 55px;
+    height: 1500px;
+    float: left;
+    background-color: #f8f8f8;
+    border-style: solid;
+    border-width: 0px 1px 0px 1px;
+    border-color: #e7e7e7;
+}
+
+.graph-area{
+    margin-top: 100px;
+    margin-left: 100px;
+    min-height: 1000px;
+    min-width: 2000px;
+}
+
+.side-menu-button{
+    display: block;
+    margin : 10px auto;
+    width : 35px;
+}
+
+.zoom-menu{
+    bottom: 45px;
+    right: 55px;
+    position: fixed;
+    z-index: 998;
+}
+
+.zoom-menu-button{
+     width : 35px;
+}
+
+.zoom-menu-icon{
+    margin : 0 8px;
+    font-size: 16px;
+}
+
+.zoom-menu-percentage{
+    display: inline;
+    width : 63px;
+}
