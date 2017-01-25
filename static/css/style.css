@@ -49,10 +49,11 @@
 }
 
 .graph-area{
-    margin-top: 100px;
-    margin-left: 100px;
-    min-height: 1000px;
-    min-width: 2000px;
+    margin-top: 74px;
+    margin-left: 55px;
+    min-width: 640px;
+    min-height: 480px;
+    background-color: white;
 }
 
 .side-menu-button{
