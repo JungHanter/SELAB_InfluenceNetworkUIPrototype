@@ -1,12 +1,14 @@
 var global_consts = {
     defaultTitle: "New Node",
     defaultEdgeValue: 0.5,
-    graphSvgStartX: 51,
-    graphSvgStartY: 70
+    graphSvgStartX: 55,
+    graphSvgStartY: 75
 };
 var global_settings = {
     appendElSpec: "#graph"
 };
+
+var networkGraph = null;
 
 document.onload = (function(d3, saveAs, Blob, undefined){
     "use strict";
@@ -194,8 +196,6 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     };
 
     GraphCreator.prototype.insertEdgeName = function (gEl, d) {
-        console.log(d);
-
         var thisGraph = this;
 
         //set edge name position
@@ -406,23 +406,28 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         console.log(d);
         var thisGraph= this,
             consts = thisGraph.consts,
-            htmlEl = d3pathG.node();
+            htmlEl = d3pathG.node(),
+            pathEl = d3pathG.selectAll("path").node();
         console.log(d3pathG.selectAll("text"));
         d3pathG.selectAll("text").remove();
-        var nodeBCR = htmlEl.getBoundingClientRect(),
-            placePad = 10,
-            useHW = 60;
-        // replace with editableconent text
+        // var nodeBCR = htmlEl.getBoundingClientRect(),
+        //     placePadX = 30, placePadY = 20,
+        //     useHW = 60;
 
-        var px = (d.source.x + d.target.x) / 2 - (useHW/2);
-        var py = (d.source.y + d.target.y) / 2 - (useHW/4);
+        var nodeBCR = pathEl.getBoundingClientRect(),
+            useHW = 60, placePadX = useHW/2, placePadY = useHW/3;
+        var px = ((nodeBCR.left+nodeBCR.right)/2) - placePadX - global_consts.graphSvgStartX;
+        var py = ((nodeBCR.top+nodeBCR.bottom)/2) - placePadY - global_consts.graphSvgStartY;
+        // var px = (d.source.x + d.target.x) / 2 - (useHW/2);
+        // var py = (d.source.y + d.target.y) / 2 - (useHW/3);
 
+        // replace with editable content text
         var d3txt = thisGraph.svg.selectAll("foreignObject")
             .data([d])
             .enter()
             .append("foreignObject")
-            // .attr("x", nodeBCR.left + placePad - global_consts.graphSvgStartX)
-            // .attr("y", nodeBCR.top + placePad - global_consts.graphSvgStartY)
+            // .attr("x", nodeBCR.left + placePadX - global_consts.graphSvgStartX)
+            // .attr("y", nodeBCR.top + placePadY - global_consts.graphSvgStartY)
             .attr("x", px).attr("y", py)
             .attr("height", useHW/2)
             .attr("width", useHW)
@@ -829,10 +834,13 @@ document.onload = (function(d3, saveAs, Blob, undefined){
 
     GraphCreator.prototype.updateWindow = function(svg){
         var docEl = document.documentElement,
-                bodyEl = document.getElementsByTagName('body')[0];
-        var x = window.innerWidth || docEl.clientWidth || bodyEl.clientWidth;
-        var y = window.innerHeight|| docEl.clientHeight|| bodyEl.clientHeight;
-        svg.attr("width", x).attr("height", y);
+            divEl = document.getElementsByTagName('graph')[0];
+        // var winWidth = window.innerWidth || docEl.clientWidth || divEl.clientWidth;
+        var winWidth = docEl.clientWidth || divEl.clientWidth;
+        // var winHeight = window.innerHeight|| docEl.clientHeight|| divEl.clientHeight;
+        var winHeight = docEl.clientHeight|| divEl.clientHeight;
+        svg.attr("width", winWidth - global_consts.graphSvgStartX)
+            .attr("height", winHeight - global_consts.graphSvgStartY);
     };
 
 
@@ -846,12 +854,14 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     };
 
     var docEl = document.documentElement,
-        bodyEl = document.getElementsByTagName('graph')[0];
+        divEl = document.getElementsByTagName('graph')[0];
 
-    var width = window.innerWidth || docEl.clientWidth || bodyEl.clientWidth,
-        height =  window.innerHeight|| docEl.clientHeight|| bodyEl.clientHeight;
+    // var winWidth = window.innerWidth || docEl.clientWidth || divEl.clientWidth,
+    //     winHeight =  window.innerHeight|| docEl.clientHeight|| divEl.clientHeight;
+    var winWidth = docEl.clientWidth || divEl.clientWidth,
+        winHeight =  docEl.clientHeight|| divEl.clientHeight;
 
-    var xLoc = width/2 - 125,
+    var xLoc = winWidth/2 - 125,
         yLoc = 150;
 
     // initial node data
@@ -870,9 +880,10 @@ document.onload = (function(d3, saveAs, Blob, undefined){
 
     /** MAIN SVG **/
     var svg = d3.select(global_settings.appendElSpec).append("svg")
-                .attr("width", width)
-                .attr("height", height);
-    var graph = new GraphCreator(svg, nodes, edges, types);
-            graph.setIdCt(3);
-    graph.updateGraph();
+                .attr("width", winWidth - global_consts.graphSvgStartX)
+                .attr("height", winHeight - global_consts.graphSvgStartY);
+    networkGraph = new GraphCreator(svg, nodes, edges, types);
+    networkGraph.setIdCt(3);
+    networkGraph.updateGraph();
+
 })(window.d3, window.saveAs, window.Blob);
