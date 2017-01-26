@@ -144,7 +144,6 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     };
 
     /* PROTOTYPE FUNCTIONS */
-
     GraphCreator.prototype.dragmove = function(d) {
         var thisGraph = this;
         if (thisGraph.state.shiftNodeDrag){
@@ -257,16 +256,21 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         d3.event.stopPropagation();
         state.mouseDownLink = d;
 
-        if (state.selectedNode){
-            thisGraph.removeSelectFromNode();
+        if (d3.event.shiftKey) {
+            state.shiftNodeDrag = d3.event.shiftKey;
+            return;
         }
 
-        var prevEdge = state.selectedEdge;
-        if (!prevEdge || prevEdge !== d){
-            thisGraph.replaceSelectEdge(d3path, d);
-        } else{
-            thisGraph.removeSelectFromEdge();
-        }
+        // if (state.selectedNode){
+        //     thisGraph.removeSelectFromNode();
+        // }
+        //
+        // var prevEdge = state.selectedEdge;
+        // if (!prevEdge || prevEdge !== d){
+        //     thisGraph.replaceSelectEdge(d3path, d);
+        // } else{
+        //     thisGraph.removeSelectFromEdge();
+        // }
     };
 
     // mousedown on node
@@ -285,7 +289,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     };
 
     /* place editable text on node in place of svg text */
-    GraphCreator.prototype.changeTextOfNode = function(d3node, d){
+    GraphCreator.prototype.changeTextOfNode = function(d3node, d) {
         var thisGraph= this,
             consts = thisGraph.consts,
             htmlEl = d3node.node();
@@ -325,11 +329,12 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     };
 
     /* place editable text on node in place of svg text */
-    GraphCreator.prototype.changeTextOfEdge = function(d3node, d) {
+    GraphCreator.prototype.changeTextOfEdge = function(d3pathG, d) {
+        console.log(d3pathG);
         var thisGraph= this,
             consts = thisGraph.consts,
-            htmlEl = d3node.node();
-        d3node.selectAll("text").remove();
+            htmlEl = d3pathG.node();
+        d3pathG.selectAll("text").remove();
         var nodeBCR = htmlEl.getBoundingClientRect(),
             placePad = 10,
             useHW = 60;
@@ -362,10 +367,53 @@ document.onload = (function(d3, saveAs, Blob, undefined){
             })
             .on("blur", function(d){
                 d.name = this.textContent;
-                thisGraph.insertEdgeName(d3node, d);
+                thisGraph.insertEdgeName(d3pathG, d);
                 d3.select(this.parentElement).remove();
             });
         return d3txt;
+    };
+
+    // mouseup on paths
+    GraphCreator.prototype.pathMouseUp = function(d3path, d) {
+        console.log(d3path);
+        console.log(d3.select(d3path.node().parentNode));
+        console.log(d);
+
+        var thisGraph = this,
+            state = thisGraph.state,
+            consts = thisGraph.consts;
+        // reset the states
+        state.shiftNodeDrag = false;
+        // d3path.classed(consts.connectClass, false);
+
+        var mouseDownLink = state.mouseDownLink;
+        if (!mouseDownLink) return;
+
+        if (state.justDragged) {
+            // dragged, not clicked
+            state.justDragged = false;
+        } else {
+            // clicked, not dragged
+            if (d3.event.shiftKey) {
+                // shift-clicked node: edit text content of path
+                var d3txt = thisGraph.changeTextOfEdge(d3.select(d3path.node().parentNode), d);
+                var txtNode = d3txt.node();
+                thisGraph.selectElementContents(txtNode);
+                txtNode.focus();
+            } else {
+                if (state.selectedNode){
+                    thisGraph.removeSelectFromNode();
+                }
+                var prevEdge = state.selectedEdge;
+                if (!prevEdge || prevEdge !== d){
+                    thisGraph.replaceSelectEdge(d3path, d);
+                } else {
+                    thisGraph.removeSelectFromEdge();
+                }
+            }
+        }
+        state.mouseDownLink = null;
+        return;
     };
 
     // mouseup on nodes
@@ -378,7 +426,6 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         d3node.classed(consts.connectClass, false);
 
         var mouseDownNode = state.mouseDownNode;
-
         if (!mouseDownNode) return;
 
         thisGraph.dragLine.classed("hidden", true);
@@ -538,7 +585,8 @@ document.onload = (function(d3, saveAs, Blob, undefined){
                 }
             )
             .on("mouseup", function(d){
-                state.mouseDownLink = null;
+                // state.mouseDownLink = null;
+                thisGraph.pathMouseUp.call(thisGraph, d3.select(this), d);
             });
 
         //update existing paths
