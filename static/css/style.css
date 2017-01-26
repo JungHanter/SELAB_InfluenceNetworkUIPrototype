@@ -51,8 +51,8 @@
 .graph-area{
     margin-top: 74px;
     margin-left: 55px;
-    min-width: 640px;
-    min-height: 480px;
+    /*min-width: 640px;*/
+    /*min-height: 480px;*/
     background-color: white;
 }
 
