@@ -1,37 +1,36 @@
 
-$('#create').click(function () {
+$('#menuCreate').click(function () {
 
 });
 
-$('#save').click(function () {
+$('#menuSave').click(function () {
 
 });
 
-$('#save-as').click(function () {
+$('#menuSaveAs').click(function () {
 
 });
 
-$('#delete').click(function () {
+$('#menuDelete').click(function () {
 
 });
 
-$('#print').click(function () {
+$('#menuPrint').click(function () {
 
 });
 
-$('#edit-nodes').click(function () {
+$('#menuEditNode').click(function () {
 
 });
-
-$('#edit-influences').click(function () {
-
-});
-$('#edit-confidences').click(function () {
+$('#menuEditEdge').click(function () {
 
 });
-$('#max-influence-node').click(function () {
+$('#menuManageConfidence').click(function () {
 
 });
-$('#max-influence-group').click(function () {
+$('#menuFindPathSet').click(function () {
+
+});
+$('#menuFindMaxInfluencePath').click(function () {
 
 });

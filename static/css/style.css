@@ -2,9 +2,13 @@ body {
     overflow: hidden;
 }
 
+/*input[type=text]:focus, input[type=button] button:focus {*/
+    /*outline: none;*/
+/*}*/
+
 .menu-group{
     margin-bottom: 0px !important;
-    height: 75px !important;
+    height: 76px !important;
     min-height : 0px;
     border-radius: 0px;
     border-width: 1px;
@@ -48,15 +52,13 @@ body {
 }
 
 .side-menu {
-    width: 55px;
+    width: 54px;
     min-height: 1600px;
     height: 100%;
     overflow: hidden;
     display: inline-block;
-    background-color: #f8f8f8;
-    border-style: solid;
-    border-width: 0px 1px 0px 1px;
-    border-color: #e7e7e7;
+    background-color: #424242;
+    border-right: solid 1px #212121;
 }
 
 .side-menu-button {
@@ -79,7 +81,7 @@ body {
     border-radius: 6px;
     position: absolute;
     margin-top: -5px;
-    margin-left: 18px;
+    margin-left: 24px;
     z-index: 1;
 }
 .side-menu-button:hover .tooltip-text {

@@ -1,8 +1,8 @@
 var global_consts = {
     defaultTitle: "New Node",
     defaultEdgeValue: 0.5,
-    graphSvgStartX: 55,
-    graphSvgStartY: 75
+    graphSvgStartX: 54,
+    graphSvgStartY: 76
 };
 var global_settings = {
     appendElSpec: "#graph"

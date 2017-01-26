@@ -1,0 +1,49 @@
+.navbar.navbar-dark {
+    background-color: #424242;
+    border: none;
+    color:white;
+}
+.navbar.navbar-dark > .top-menu {
+    border-bottom: solid 1px #212121;
+    color:white;
+}
+.navbar.navbar-dark a {
+    color: white;
+}
+.navbar.navbar-dark a:hover, .navbar.navbar-dark a:focus {
+    color: white;
+    background-color: #616161;
+}
+.navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-toggle:hover,
+.navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-toggle:focus,
+.navbar.navbar-dark .nav.navbar-nav .dropdown.open .dropdown-toggle{
+    background-color: #616161;
+}
+.navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-menu {
+    background-color: #424242;
+}
+.navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-menu > li > a:hover {
+    background-color: #616161;
+}
+.navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-menu > li.divider {
+    background-color: #616161;
+}
+
+.btn-group > .dropdown-menu a {
+    color: #333;
+}
+.btn-group > .dropdown-menu a:hover, .btn-group > .dropdown-menu a:focus {
+    color: #333;
+    background-color: #eee;
+}
+
+
+.btn.btn-dark {
+    background-color: #424242;
+    border-color: #212121;
+    color:white;
+}
+
+.btn.btn-dark:hover, .btn.btn-dark:focus {
+    background-color: #616161;
+}

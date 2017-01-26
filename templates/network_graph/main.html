@@ -7,40 +7,48 @@
         <title>Influence Network Analytics</title>
 
         <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-custom.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'lib/directed-graph-creator/graph-creator-custom.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     </head>
 
     <body>
-        <nav class="navbar navbar-default menu-group">
-            <div class="container-fluid top-menu">
+        <nav class="navbar navbar-dark menu-group">
+            <div class="container-fluid top-menu main-menu">
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">File</a>
                             <ul class="dropdown-menu">
-                                <li><a id="create" href="#">Create</a></li>
+                                <li><a id="menuCreate" href="#">Create</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a id="save" href="#">Save</a></li>
-                                <li><a id="save-as" href="#">Save-As</a></li>
+                                <li><a id="menuSave" href="#">Save</a></li>
+                                <li><a id="menuSaveAs" href="#">Save-As</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a id="delete" href="#">Delete</a></li>
-                                <li><a id="print" href="#">Print</a></li>
+                                <li><a id="menuDelete" href="#">Delete</a></li>
+                                <li><a id="menuPrint" href="#">Print</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit</a>
                             <ul class="dropdown-menu">
-                                <li><a id="edit-nodes" href="#">Edit Nodes</a></li>
-                                <li><a id="edit-influences" href="#">Edit Influences</a></li>
-                                <li><a id="edit-confidences" href="#">Edit Confidences</a></li>
+                                <li><a id="menuNewNode" href="#">New Node</a></li>
+                                <li><a id="menuEditNode" href="#">Edit Node</a></li>
+                                <li><a id="menuDeleteNode" href="#">Delete Node</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a id="menuNewEdge" href="#">New Edge</a></li>
+                                <li><a id="menuEditEdge" href="#">Edit Influences</a></li>
+                                <li><a id="menuDeleteEdge" href="#">Delete Influences</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a id="menuManageNodeType" href="#">Manage Node Type</a></li>
+                                <li><a id="menuManageConfidence" href="#">Manage Confidences</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Find</a>
                             <ul class="dropdown-menu">
-                                <li><a id="max-influence-node" href="#">Max Influence : Node - Node</a></li>
-                                <li><a id="max-influence-group" href="#">Max Influence : Group - Group</a></li>
+                                <li><a id="menuFindPathSet" href="#">Find Path Set</a></li>
+                                <li><a id="menuFindMaxInfluencePath" href="#">Find Max Influence Path</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -81,8 +89,8 @@
         </nav>
 
         <div class="zoom-menu">
-            <button type="button" class="btn btn-info zoom-menu-button">+</button>
-            <button type="button" class="btn btn-info zoom-menu-button">-</button>
+            <button type="button" class="btn btn-dark zoom-menu-button">+</button>
+            <button type="button" class="btn btn-dark zoom-menu-button">-</button>
             <span class="glyphicon glyphicon-search zoom-menu-icon" aria-hidden="true"></span>
             <input type="text" class="form-control zoom-menu-percentage" placeholder="100%">
         </div>
@@ -90,12 +98,12 @@
 
         <div class="content">
             <nav class="side-menu">
-                <button type="button" class="btn btn-primary side-menu-button">NN<span class="tooltip-text">New Node</span></button>
-                <button type="button" class="btn btn-primary side-menu-button">EN<span class="tooltip-text">Edit Node</span></button>
-                <button type="button" class="btn btn-primary side-menu-button">DN<span class="tooltip-text">Delete Node</span></button>
-                <button type="button" class="btn btn-primary side-menu-button">NE<span class="tooltip-text">New Edge</span></button>
-                <button type="button" class="btn btn-primary side-menu-button">EE<span class="tooltip-text">Edit Edge</span></button>
-                <button type="button" class="btn btn-primary side-menu-button">DE<span class="tooltip-text">Delete Edge</span></button>
+                <button type="button" class="btn btn-dark side-menu-button">NN<span class="tooltip-text">New Node</span></button>
+                <button type="button" class="btn btn-dark side-menu-button">EN<span class="tooltip-text">Edit Node</span></button>
+                <button type="button" class="btn btn-dark side-menu-button">DN<span class="tooltip-text">Delete Node</span></button>
+                <button type="button" class="btn btn-dark side-menu-button">NE<span class="tooltip-text">New Edge</span></button>
+                <button type="button" class="btn btn-dark side-menu-button">EE<span class="tooltip-text">Edit Edge</span></button>
+                <button type="button" class="btn btn-dark side-menu-button">DE<span class="tooltip-text">Delete Edge</span></button>
             </nav>
             <div class="graph-area">
                 <div id="graph"></div>
