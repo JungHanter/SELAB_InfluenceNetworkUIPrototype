@@ -193,19 +193,60 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         }
     };
 
-    GraphCreator.prototype.insertEdgeName = function (gEl, path) {
+    GraphCreator.prototype.insertEdgeName = function (gEl, d) {
+        console.log(d);
+
         var thisGraph = this;
 
-        var tx=0, ty=0;
+        //set edge name position
+        var vx=(d.target.x - d.source.x), vy=(d.target.y - d.source.y);
+        var dx=Math.abs(vx), dy=Math.abs(vy);
+        var dr=Math.sqrt(dx*dx + dy*dy);
+        var tx=((d.source.x+d.target.x)/2), ty=((d.source.y+d.target.y)/2);
+        if (d.bilateral) {
+            if (dx >= dy) {
+                if (d.source.x < d.target.x) {
+                    tx = tx + (20 * vy / dr);
+                    ty = ty - 10 - 20;
+                } else {
+                    tx = tx + (20 * vy / dr);
+                    ty = ty + 10 + 10;
+                }
+            } else {    // dy > dx
+                if (d.source.y < d.target.y) {
+                    tx = tx - 10 - 20 - 5;
+                    ty = ty + (20 * vx / dr);
+                } else {
+                    tx = tx + 10 + 20;
+                    ty = ty + (20 * vx / dr);
+                }
+            }
+        } else {
+            if (dx >= dy) {
+                if (d.source.x < d.target.x) {
+                    tx = tx - (20 * vy / dr);
+                } else {
+                    tx = tx + (20 * vy / dr);
+                }
+                ty = ty + 10 + (10 * dy / dr);
+            } else {
+                tx = tx + 25 + (10 * dx / dr);
+                if (d.source.y < d.target.y) {
+                    ty = ty - (10 * vx / dr);
+                } else {
+                    ty = ty + (10 * vx / dr);
+                }
+            }
+        }
+
         var el = gEl.append("text")
                     .attr("text-anchor","middle")
-                    .attr("transform", "translate(" + ((path.source.x+path.target.x)/2) +
-                                       "," + ((path.source.y+path.target.y)/2 + ")"))
+                    .attr("transform", "translate(" + tx + "," + ty + ")")
                     .attr("dy", "10")
                     .on("mousedown", function(d) {
                         thisGraph.pathTextMouseDown.call(thisGraph, d3.select(this), d);
                     });
-        var tspan = el.append('tspan').text(path.name);
+        var tspan = el.append('tspan').text(d.name);
     };
 
 
@@ -278,16 +319,13 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     };
 
     GraphCreator.prototype.pathTextMouseDown = function(d3pathText, d){
-        console.log(d3pathText);
-        console.log(d);
-        // return;
-
         var thisGraph = this,
             state = thisGraph.state;
         d3.event.stopPropagation();
         state.mouseDownLink = d;
 
         if (d3.event.shiftKey) {
+            // not working... because the event node is text element. cannot remove itself in its event handler.
             var d3txt = thisGraph.changeTextOfEdge(d3.select(d3pathText.node().parentNode), d);
             var txtNode = d3txt.node();
             thisGraph.selectElementContents(txtNode);
@@ -365,9 +403,11 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     /* place editable text on node in place of svg text */
     GraphCreator.prototype.changeTextOfEdge = function(d3pathG, d) {
         console.log(d3pathG);
+        console.log(d);
         var thisGraph= this,
             consts = thisGraph.consts,
             htmlEl = d3pathG.node();
+        console.log(d3pathG.selectAll("text"));
         d3pathG.selectAll("text").remove();
         var nodeBCR = htmlEl.getBoundingClientRect(),
             placePad = 10,
@@ -431,6 +471,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
                 thisGraph.selectElementContents(txtNode);
                 txtNode.focus();
             } else {
+                console.log(d);
                 if (state.selectedNode){
                     thisGraph.removeSelectFromNode();
                 }
@@ -463,7 +504,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         if (mouseDownNode !== d){
             // we're in a different node: create new edge for mousedown edge and add to graph
             // TODO here is to create edge!!!
-            var newEdge = {source: mouseDownNode, target: d};
+            var newEdge = {source: mouseDownNode, target: d, name: 0.5, bilateral: false};
             var filtRes = thisGraph.paths.filter(function(d){
                 if (d.source === newEdge.target && d.target === newEdge.source){
                     // console.log("=== Same Nodes Edges ===");
@@ -638,6 +679,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
                 // console.log("(update)" + d.source.id + " -> " + d.target.id);
                 // console.log(filtRes);
                 if(filtRes[0].length == 1) {    //bi-direct
+                    d.bilateral = true;
                     var dx = Math.abs(d.source.x - d.target.x);
                     var dy = Math.abs(d.source.y - d.target.y);
                     if (dx >= dy) {
@@ -654,6 +696,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
                         }
                     }
                 } else {    //single-direct
+                    d.bilateral = false;
                     return "M" + d.source.x + "," + d.source.y + "L" + d.target.x + "," + d.target.y;
                 }
             });
