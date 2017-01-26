@@ -1,3 +1,7 @@
+$('#subMenuNode').hide();
+// $('#subMenuEdge').hide();
+$('#subMenuNone').hide();
+
 
 $('#menuCreate').click(function () {
 
