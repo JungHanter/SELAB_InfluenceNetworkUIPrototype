@@ -46,6 +46,16 @@ marker{
     fill: #333;
 }
 
+g.conceptG circle{
+    fill: #F6F6F6;
+    stroke: #333;
+    stroke-width: 2px;
+}
+
+g.conceptG:hover circle{
+    fill: rgb(200, 238, 241) !important;
+}
+
 g.conceptG.type-color-red circle {
     fill: rgb(255, 0, 0);
 }
@@ -65,21 +75,11 @@ g.conceptG.type-color-magenta circle {
     fill: rgb(255, 0, 255);
 }
 
-g.conceptG circle{
-    fill: #F6F6F6;
-    stroke: #333;
-    stroke-width: 2px;
+g.conceptG.selected circle{
+    fill: rgb(250, 232, 255) !important;
 }
-
-g.conceptG:hover circle{
-    fill: rgb(200, 238, 241);
-}
-
-g.selected circle{
-    fill: rgb(250, 232, 255);
-}
-g.selected:hover circle{
-    fill: rgb(250, 232, 255);
+g.conceptG.selected:hover circle{
+    fill: rgb(250, 232, 255) !important;
 }
 
 path.link {
