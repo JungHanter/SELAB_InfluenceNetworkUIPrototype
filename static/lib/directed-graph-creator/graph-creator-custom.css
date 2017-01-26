@@ -92,6 +92,9 @@ path.link {
 path.link:hover{
     stroke: rgb(94, 196, 204);
 }
+g.edgeG:hover path.link {
+    stroke: rgb(94, 196, 204);
+}
 
 g.connect-node circle{
     fill: #BEFFFF;
