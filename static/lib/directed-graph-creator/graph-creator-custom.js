@@ -194,13 +194,17 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     };
 
     GraphCreator.prototype.insertEdgeName = function (gEl, path) {
-        var tx=0, ty=0;
+        var thisGraph = this;
 
+        var tx=0, ty=0;
         var el = gEl.append("text")
                     .attr("text-anchor","middle")
                     .attr("transform", "translate(" + ((path.source.x+path.target.x)/2) +
                                        "," + ((path.source.y+path.target.y)/2 + ")"))
-                    .attr("dy", "10");
+                    .attr("dy", "10")
+                    .on("mousedown", function(d) {
+                        thisGraph.pathTextMouseDown.call(thisGraph, d3.select(this), d);
+                    });
         var tspan = el.append('tspan').text(path.name);
     };
 
@@ -208,7 +212,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     // remove edges associated with a node
     GraphCreator.prototype.spliceLinksForNode = function(node) {
         var thisGraph = this,
-                toSplice = thisGraph.edges.filter(function(l) {
+            toSplice = thisGraph.edges.filter(function(l) {
             return (l.source === node || l.target === node);
         });
         toSplice.map(function(l) {
@@ -252,7 +256,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
 
     GraphCreator.prototype.pathMouseDown = function(d3path, d){
         var thisGraph = this,
-                state = thisGraph.state;
+            state = thisGraph.state;
         d3.event.stopPropagation();
         state.mouseDownLink = d;
 
@@ -271,6 +275,36 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         // } else{
         //     thisGraph.removeSelectFromEdge();
         // }
+    };
+
+    GraphCreator.prototype.pathTextMouseDown = function(d3pathText, d){
+        console.log(d3pathText);
+        console.log(d);
+        // return;
+
+        var thisGraph = this,
+            state = thisGraph.state;
+        d3.event.stopPropagation();
+        state.mouseDownLink = d;
+
+        if (d3.event.shiftKey) {
+            var d3txt = thisGraph.changeTextOfEdge(d3.select(d3pathText.node().parentNode), d);
+            var txtNode = d3txt.node();
+            thisGraph.selectElementContents(txtNode);
+            txtNode.focus();
+        } else {
+            if (state.selectedNode){
+                thisGraph.removeSelectFromNode();
+            }
+
+            var prevEdge = state.selectedEdge;
+            if (!prevEdge || prevEdge !== d){
+                var d3path = d3.select(d3pathText.node().parentNode).selectAll("path");
+                thisGraph.replaceSelectEdge(d3path, d);
+            } else{
+                thisGraph.removeSelectFromEdge();
+            }
+        }
     };
 
     // mousedown on node
@@ -375,10 +409,6 @@ document.onload = (function(d3, saveAs, Blob, undefined){
 
     // mouseup on paths
     GraphCreator.prototype.pathMouseUp = function(d3path, d) {
-        console.log(d3path);
-        console.log(d3.select(d3path.node().parentNode));
-        console.log(d);
-
         var thisGraph = this,
             state = thisGraph.state,
             consts = thisGraph.consts;
@@ -528,8 +558,8 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     // keydown on main svg
     GraphCreator.prototype.svgKeyDown = function() {
         var thisGraph = this,
-                state = thisGraph.state,
-                consts = thisGraph.consts;
+            state = thisGraph.state,
+            consts = thisGraph.consts;
         // make sure repeated key presses don't register for each keydown
         if(state.lastKeyDown !== -1) return;
 
@@ -582,12 +612,15 @@ document.onload = (function(d3, saveAs, Blob, undefined){
             })
             .on("mousedown", function(d){
                 thisGraph.pathMouseDown.call(thisGraph, d3.select(this), d);
-                }
-            )
+            })
             .on("mouseup", function(d){
                 // state.mouseDownLink = null;
                 thisGraph.pathMouseUp.call(thisGraph, d3.select(this), d);
             });
+
+        // paths.select("text")
+        //     .on("mousedown", function(d) {
+        //     });
 
         //update existing paths
         paths.select("path").style('marker-end', 'url(#end-arrow)')
