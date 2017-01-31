@@ -139,12 +139,14 @@ body {
     background-color: white;
 }
 
-#subMenuNodeType .nodeTypeColor {
+#subMenuNodeType .nodeTypeColor,
+.subMenuEdgeNode .nodeTypeColor {
     width: 20px;
     margin-right: 8px;
     display: inline-block;
 }
-#subMenuNodeTypeDropdown .nodeTypeColor {
+#subMenuNodeTypeDropdown .nodeTypeColor,
+.subMenuEdgeNodeDropdown .nodeTypeColor {
     width: 20px;
     margin-right: 8px;
     display: inline-block;
