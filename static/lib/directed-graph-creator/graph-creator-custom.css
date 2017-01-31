@@ -51,35 +51,68 @@ g.conceptG circle{
     stroke: #333;
     stroke-width: 2px;
 }
+g.conceptG text{
+    fill: black;
+}
 
 g.conceptG:hover circle{
     fill: rgb(200, 238, 241) !important;
 }
+g.conceptG:hover text{
+    fill: black !important;
+}
 
-g.conceptG.type-color-red circle {
-    fill: rgb(255, 0, 0);
-}
-g.conceptG.type-color-blue circle {
-    fill: rgb(0, 0, 255);
-}
-g.conceptG.type-color-green circle {
-    fill: rgb(0, 255, 0);
-}
-g.conceptG.type-color-yellow circle {
-    fill: rgb(255, 255, 0);
-}
-g.conceptG.type-color-cyan circle {
-    fill: rgb(0, 255, 255);
-}
-g.conceptG.type-color-magenta circle {
-    fill: rgb(255, 0, 255);
-}
+g.conceptG.type-color-red circle { fill: #f44336; }
+g.conceptG.type-color-red text { fill: white; }
+g.conceptG.type-color-pink circle { fill: #e91e63; }
+g.conceptG.type-color-pink text { fill: white; }
+g.conceptG.type-color-purple circle { fill: #9c27b0; }
+g.conceptG.type-color-purple text { fill: white; }
+g.conceptG.type-color-deep-purple circle { fill: #673ab7; }
+g.conceptG.type-color-deep-purple text { fill: white; }
+g.conceptG.type-color-indigo circle { fill: #3f51b5; }
+g.conceptG.type-color-indigo text { fill: white; }
+g.conceptG.type-color-blue circle { fill: #2196f3; }
+g.conceptG.type-color-blue text { fill: white; }
+g.conceptG.type-color-light-blue circle { fill: #03a9f4; }
+g.conceptG.type-color-light-blue text { fill: black; }
+g.conceptG.type-color-cyan circle { fill: #00bcd4; }
+g.conceptG.type-color-cyan text { fill: black; }
+g.conceptG.type-color-teal circle { fill: #009688; }
+g.conceptG.type-color-teal text { fill: white; }
+g.conceptG.type-color-green circle { fill: #4caf50; }
+g.conceptG.type-color-green text { fill: black; }
+g.conceptG.type-color-light-green circle { fill: #8bc34a; }
+g.conceptG.type-color-light-green text { fill: black; }
+g.conceptG.type-color-lime circle { fill: #cddc39; }
+g.conceptG.type-color-lime text { fill: black; }
+g.conceptG.type-color-yellow circle { fill: #ffeb3b; }
+g.conceptG.type-color-yellow text { fill: black; }
+g.conceptG.type-color-amber circle { fill: #ffc107; }
+g.conceptG.type-color-amber text { fill: black; }
+g.conceptG.type-color-orange circle { fill: #ff9800; }
+g.conceptG.type-color-orange text { fill: black; }
+g.conceptG.type-color-deep-orange circle { fill: #ff5722; }
+g.conceptG.type-color-deep-orange text { fill: white; }
+g.conceptG.type-color-brown circle { fill: #795548; }
+g.conceptG.type-color-brown text { fill: white; }
+g.conceptG.type-color-grey circle { fill: #757575; }
+g.conceptG.type-color-grey text { fill: white; }
+g.conceptG.type-color-blue-grey circle { fill: #607d8b; }
+g.conceptG.type-color-blue-grey text { fill: white; }
+
 
 g.conceptG.selected circle{
     fill: rgb(250, 232, 255) !important;
 }
+g.conceptG.selected text{
+    fill: black !important;
+}
 g.conceptG.selected:hover circle{
     fill: rgb(250, 232, 255) !important;
+}
+g.conceptG.selected:hover text{
+    fill: black !important;
 }
 
 path.link {

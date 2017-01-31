@@ -1,6 +1,33 @@
-$('#subMenuNode').hide();
-$('#subMenuEdge').hide();
-$('#subMenuNone').show();
+var typeColors = [
+    'red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue',
+    'light-blue', 'cyan', 'teal', 'green', 'light-green',
+    'lime', 'yellow', 'amber', 'orange', 'deep-orange',
+    'brown',' grey', 'blue-grey'
+];
+
+var nodeTypes = {
+    "A": "red",
+    "B": "yellow",
+    "C": "blue",
+    "D": "teal",
+    "E": "indigo"
+};
+
+function setNodeTypes() {
+    $('#subMenuNodeTypeDropdown').empty();
+    for (var type in nodeTypes) {
+        $('#subMenuNodeTypeDropdown').append("<li><a href='#'><span class='nodeTypeColor type-color-bg type-color-"
+            + nodeTypes[type] + "'>&nbsp;</span><span class='nodeTypeName'>"
+            + type+"</span></a>");
+    }
+    $('#subMenuNodeTypeDropdown > li > a').off('click').unbind('click').click(function() {
+        var selItem = $(this);
+        $('#subMenuNodeType').removeClass('unselected').html(selItem.html());
+    });
+
+    networkGraph.setTypes(nodeTypes);
+    networkGraph.updateGraph();
+}
 
 var selectedNode = null;
 function setSelectedNode(d3Node, nodeData) {
@@ -15,9 +42,12 @@ function setSelectedNode(d3Node, nodeData) {
 
     $('#subMenuNodeName').val(nodeData.title);
     if (nodeData.type != null) {
-        $('#subMenuNodeType').text(nodeData.type);
+        $('#subMenuNodeType').removeClass('unselected').html(
+            "<span class='nodeTypeColor type-color-bg type-color-"
+                + nodeTypes[nodeData.type] + "'>&nbsp;</span><span class='nodeTypeName'>"
+                + nodeData.type+"</span>");
     } else {
-        $('#subMenuNodeType').text("Select Type");
+        $('#subMenuNodeType').addClass('unselected').text("Select Type");
     }
     selectedEdge = null;
     selectedNode = {
@@ -54,7 +84,7 @@ function setUnselected() {
     $('.menuDeleteEdge').addClass('disabled');
 
     $('#subMenuNodeName').val('');
-    $('#subMenuNodeType').text('');
+    $('#subMenuNodeType').addClass('unselected').text('');
     $('#subMenuEdgeInfluence').val('');
 
     selectedNode = null;
@@ -62,13 +92,17 @@ function setUnselected() {
 }
 
 function createNode() {
-
+    networkGraph.createNode();
 }
 function editNode() {
     if (selectedNode != null) {
+        var origianlType = selectedNode.nodeData.type;
         selectedNode.nodeData.title = $('#subMenuNodeName').val();
-        selectedNode.nodeData.type = $('#subMenuNodeType').text();
+        selectedNode.nodeData.type = $('#subMenuNodeType .nodeTypeName').text();
         networkGraph.changeNodeTitle(selectedNode.d3Node, selectedNode.nodeData.title);
+        if (origianlType != selectedNode.nodeData.type) {
+            networkGraph.updateNodeType(selectedNode.d3Node);
+        }
         networkGraph.updateGraph();
     }
 }
@@ -115,16 +149,17 @@ function printFile() {
 
 $(document).ready(function() {
     setUnselected();
+    setNodeTypes();
 
     networkGraph.setSelectedCallbacks(
         function (d3Node, nodeData) {       // onNodeSelected
-            console.log(nodeData);
+            // console.log(nodeData);
             setSelectedNode(d3Node, nodeData);
         }, function (d3PathG, edgeData) {    // onEdgeSelected
-            console.log(edgeData);
+            // console.log(edgeData);
             setSelectedEdge(d3PathG, edgeData);
         }, function () {        // onUnselected
-            console.log("unselected");
+            // console.log("unselected");
             setUnselected();
         }
     );
