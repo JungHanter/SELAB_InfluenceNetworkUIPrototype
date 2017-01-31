@@ -18,37 +18,45 @@ body {
     padding-left: 10px !important;
 }
 
-#edit-menu span{
-    padding : 5px 15px;
-}
 .menu-group .dropdown > a
 {
     padding: 5px 15px;
 }
 
-#edit-name-text{
-    float : left;
-    padding: 10px 15px;
-}
-#edit-name-field{
-    float : left;
-    padding: 5px 0px;
-}
-
 .menu-group > .container-fluid, .edit-menu > .container-fluid{
     padding-left: 0px;
 }
-#edit-type-text{
-    float : left;
-    padding: 10px 15px;
-}
+
 .btn-group{
     padding-top: 5px;
 }
 
-.content {
-    width: auto;
-    height: auto;
+.navbar .sub-menu-container .nav.navbar-nav .sub-menu-name {
+    float : left;
+    padding: 10px 15px;
+}
+.navbar .sub-menu-container .nav.navbar-nav .sub-menu-field {
+    float : left;
+    padding: 5px 0px;
+}
+.navbar .sub-menu-container .nav.navbar-nav .btn-group {
+    float : left;
+    padding-top: 5px;
+}
+.navbar .sub-menu-container .nav.navbar-nav .btn-group .btn-selection {
+    min-width: 120px;
+}
+.navbar .sub-menu-container .nav.navbar-nav .btn-group .btn-selection.unselected {
+    color: #9e9e9e;
+}
+.navbar .sub-menu-container .nav.navbar-nav .btn-group .btn-selection.long-length {
+    min-width: 240px;
+}
+.navbar .sub-menu-container .nav.navbar-nav .sub-menu-divider {
+    float : left;
+    width: 0;
+    height: 0;
+    padding: 22px 15px;
 }
 
 .side-menu {
@@ -108,6 +116,11 @@ body {
 .zoom-menu-percentage{
     display: inline;
     width : 63px;
+}
+
+.content {
+    width: auto;
+    height: auto;
 }
 
 .graph-area {

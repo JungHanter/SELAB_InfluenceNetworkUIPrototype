@@ -402,13 +402,10 @@ document.onload = (function(d3, saveAs, Blob, undefined){
 
     /* place editable text on node in place of svg text */
     GraphCreator.prototype.changeTextOfEdge = function(d3pathG, d) {
-        console.log(d3pathG);
-        console.log(d);
         var thisGraph= this,
             consts = thisGraph.consts,
             htmlEl = d3pathG.node(),
             pathEl = d3pathG.selectAll("path").node();
-        console.log(d3pathG.selectAll("text"));
         d3pathG.selectAll("text").remove();
         // var nodeBCR = htmlEl.getBoundingClientRect(),
         //     placePadX = 30, placePadY = 20,

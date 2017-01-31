@@ -2,8 +2,11 @@ $('#subMenuNode').hide();
 // $('#subMenuEdge').hide();
 $('#subMenuNone').hide();
 
+$(document).ready(function() {
 
-$('#menuCreate').click(function () {
+});
+
+$('#menuNew').click(function () {
 
 });
 
