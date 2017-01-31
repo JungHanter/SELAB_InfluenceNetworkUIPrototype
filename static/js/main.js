@@ -18,7 +18,7 @@ function setNodeTypes() {
     for (var type in nodeTypes) {
         $('#subMenuNodeTypeDropdown').append("<li><a href='#'><span class='nodeTypeColor type-color-bg type-color-"
             + nodeTypes[type] + "'>&nbsp;</span><span class='nodeTypeName'>"
-            + type+"</span></a>");
+            + type+"</span></a></li>");
     }
     $('#subMenuNodeTypeDropdown > li > a').off('click').unbind('click').click(function() {
         var selItem = $(this);
@@ -67,6 +67,22 @@ function setSelectedEdge(d3PathG, edgeData) {
     $('.menuDeleteEdge').removeClass('disabled');
 
     $('#subMenuEdgeInfluence').val(edgeData.name);
+
+    $('.subMenuEdgeNodeDropdown').empty();
+    for (var i=0; i<networkGraph.nodes.length; i++) {
+        nodeData = networkGraph.nodes[i];
+        nodeInfoHtml = "<li><a href='#'><span class='nodeName' data-nodeId=" + nodeData.id
+            + ">" + nodeData.title + "</span> (";
+        if (nodeData.type == null) {
+            nodeInfoHtml += "No Type)";
+        } else {
+            nodeInfoHtml += "<span class='nodeTypeColor type-color-bg type-color-"
+                + nodeTypes[nodeData.type] + "'>&nbsp;</span><span class='nodeTypeName'>"
+                + nodeData.type+"</span>)</a></li>";
+        }
+        $('.subMenuEdgeNodeDropdown').append(nodeInfoHtml);
+    }
+
     selectedNode = null;
     selectedEdge = {
         'd3PathG': d3PathG,
