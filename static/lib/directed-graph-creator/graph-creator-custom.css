@@ -110,6 +110,12 @@ path.link.hidden{
 path.link.selected {
     stroke: rgb(229, 172, 247);
 }
+g.edgeG.selected path.link {
+    stroke: rgb(229, 172, 247);
+}
+g.edgeG.selected text {
+    fill: rgb(229, 172, 247);
+}
 
 #active-edge-editing {
     background-color: white !important;

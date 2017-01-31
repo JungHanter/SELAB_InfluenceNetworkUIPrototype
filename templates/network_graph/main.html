@@ -20,28 +20,27 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">File</a>
                             <ul class="dropdown-menu">
-                                <li><a id="menuNew" href="#">New</a></li>
+                                <li><a class="menuNew" href="#">New</a></li>
+                                <li><a class="menuLoad" href="#">Load</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a id="menuSave" href="#">Save</a></li>
-                                <li><a id="menuSaveAs" href="#">Save-As</a></li>
+                                <li><a class="menuSave" href="#">Save</a></li>
+                                <li><a class="menuSaveAs" href="#">Save-As</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a id="menuDelete" href="#">Delete</a></li>
-                                <li><a id="menuPrint" href="#">Print</a></li>
+                                <li><a class="menuDelete" href="#">Delete</a></li>
+                                <li><a class="menuPrint" href="#">Print</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit</a>
                             <ul class="dropdown-menu">
-                                <li><a id="menuNewNode" href="#">New Node</a></li>
-                                <li><a id="menuEditNode" href="#">Edit Node</a></li>
-                                <li><a id="menuDeleteNode" href="#">Delete Node</a></li>
+                                <li><a class="menuNewNode" href="#">New Node</a></li>
+                                <li><a class="menuDeleteNode" href="#">Delete Node</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a id="menuNewEdge" href="#">New Edge</a></li>
-                                <li><a id="menuEditEdge" href="#">Edit Influences</a></li>
-                                <li><a id="menuDeleteEdge" href="#">Delete Influences</a></li>
+                                <li><a class="menuNewEdge" href="#">New Edge</a></li>
+                                <li><a class="menuDeleteEdge" href="#">Delete Edge</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a id="menuManageNodeType" href="#">Manage Node Type</a></li>
-                                <li><a id="menuManageConfidence" href="#">Manage Confidences</a></li>
+                                <li><a class="menuManageNodeType" href="#">Manage Node Type</a></li>
+                                <li><a class="menuManageConfidence" href="#">Manage Confidences</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -66,14 +65,14 @@
                         <span>Name : </span>
                     </div>
                     <div class="sub-menu-field">
-                        <input type="text" class="form-control" placeholder="Node Name">
+                        <input id="subMenuNodeName" type="text" class="form-control" placeholder="Node Name">
                     </div>
                     <div class="sub-menu-divider"></div>
                     <div class="sub-menu-name">
                         <span>Type : </span>
                     </div>
                     <div class="btn-group">
-                        <div class="btn btn-default btn-selection unselected">Select Type</div>
+                        <div id="subMenuNodeType" class="btn btn-default btn-selection unselected">Select Type</div>
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="caret"></span>
                             <span class="sr-only">Toggle Dropdown</span>
@@ -84,11 +83,15 @@
                             <li><a href="#">Type3</a></li>
                         </ul>
                     </div>
+                    <div class="sub-menu-divider"></div>
+                    <div class="sub-menu-btn">
+                        <button type="button" id="subMenuNodeEditBtn" class="btn btn-default">Edit</button>
+                    </div>
                 </ul>
 
                 <ul id="subMenuEdge" class="nav navbar-nav">
                     <div class="sub-menu-name">
-                        <span>Edge Path : </span>
+                        <span>Path : </span>
                     </div>
                     <div class="btn-group">
                         <div class="btn btn-default btn-selection long-length unselected">Select Source Node</div>
@@ -122,31 +125,36 @@
                         <span>Influence : </span>
                     </div>
                     <div class="sub-menu-field">
-                        <input type="text" class="form-control" placeholder="Influence Value">
+                        <input type="text" id="subMenuEdgeInfluence" class="form-control" placeholder="Influence Value">
+                    </div>
+                    <div class="sub-menu-divider"></div>
+                    <div class="sub-menu-btn">
+                        <button type="button" id="subMenuEdgeEditBtn" class="btn btn-default">Edit</button>
                     </div>
                 </ul>
 
                 <ul id="subMenuNone" class="nav navbar-nav">
+                    <div class="sub-menu-divider"></div>
                 </ul>
             </div>
         </nav>
 
-        <div class="zoom-menu">
-            <button type="button" class="btn btn-dark zoom-menu-button">+</button>
-            <button type="button" class="btn btn-dark zoom-menu-button">-</button>
-            <span class="glyphicon glyphicon-search zoom-menu-icon" aria-hidden="true"></span>
-            <input type="text" class="form-control zoom-menu-percentage" placeholder="100%">
-        </div>
+{#        <div class="zoom-menu">#}
+{#            <button type="button" class="btn btn-dark zoom-menu-button">+</button>#}
+{#            <button type="button" class="btn btn-dark zoom-menu-button">-</button>#}
+{#            <span class="glyphicon glyphicon-search zoom-menu-icon" aria-hidden="true"></span>#}
+{#            <input type="text" class="form-control zoom-menu-percentage" placeholder="100%">#}
+{#        </div>#}
 
 
         <div class="content">
             <nav class="side-menu">
-                <button type="button" class="btn btn-dark side-menu-button">NN<span class="tooltip-text">New Node</span></button>
-                <button type="button" class="btn btn-dark side-menu-button">EN<span class="tooltip-text">Edit Node</span></button>
-                <button type="button" class="btn btn-dark side-menu-button">DN<span class="tooltip-text">Delete Node</span></button>
-                <button type="button" class="btn btn-dark side-menu-button">NE<span class="tooltip-text">New Edge</span></button>
-                <button type="button" class="btn btn-dark side-menu-button">EE<span class="tooltip-text">Edit Edge</span></button>
-                <button type="button" class="btn btn-dark side-menu-button">DE<span class="tooltip-text">Delete Edge</span></button>
+                <button type="button" class="btn btn-dark side-menu-button menuNewNode">NN<span class="tooltip-text">New Node</span></button>
+{#                <button type="button" class="btn btn-dark side-menu-button">EN<span class="tooltip-text">Edit Node</span></button>#}
+                <button type="button" class="btn btn-dark side-menu-button menuDeleteNode">DN<span class="tooltip-text">Delete Node</span></button>
+                <button type="button" class="btn btn-dark side-menu-button menuNewEdge">NE<span class="tooltip-text">New Edge</span></button>
+{#                <button type="button" class="btn btn-dark side-menu-button">EE<span class="tooltip-text">Edit Edge</span></button>#}
+                <button type="button" class="btn btn-dark side-menu-button menuDeleteEdge">DE<span class="tooltip-text">Delete Edge</span></button>
             </nav>
             <div class="graph-area">
                 <div id="graph"></div>
@@ -154,6 +162,7 @@
         </div>
 
         <script src="{% static 'lib/jquery/jquery-3.1.1.min.js' %}"></script>
+        <script src="{% static 'js/jquery_extends.js' %}"></script>
         <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
 {#        <script src="{% static 'lib/d3/d3.min.js' %}"></script>#}
         <script src="{% static 'lib/d3/d3.v3.min.js' %}" charset="utf-8"></script>

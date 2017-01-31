@@ -39,6 +39,10 @@ body {
     float : left;
     padding: 5px 0px;
 }
+.navbar .sub-menu-container .nav.navbar-nav .sub-menu-btn {
+    float : left;
+    padding: 5px 0px;
+}
 .navbar .sub-menu-container .nav.navbar-nav .btn-group {
     float : left;
     padding-top: 5px;

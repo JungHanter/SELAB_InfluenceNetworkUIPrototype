@@ -28,6 +28,15 @@
 .navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-menu > li.divider {
     background-color: #616161;
 }
+.navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-menu > li > a:disabled,
+.navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-menu > li > a.disabled {
+    color: #9e9e9e;
+}
+.navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-menu > li > a:disabled:hover,
+.navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-menu > li > a.disabled:hover{
+    background-color: #424242;
+    cursor: not-allowed;
+}
 
 .btn-group > .dropdown-menu a {
     color: #333;
