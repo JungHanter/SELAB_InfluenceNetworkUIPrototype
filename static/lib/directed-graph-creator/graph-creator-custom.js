@@ -846,6 +846,10 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         // if (type != undefin/this.consts.typeColorHead + type, true);
     };
 
+    GraphCreator.prototype.updateEdges = function () {
+        //pass
+    }
+
     GraphCreator.prototype.zoomed = function(){
         this.state.justScaleTransGraph = true;
         d3.select("." + this.consts.graphClass)
@@ -922,6 +926,13 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         //     txtNode = d3txt.node();
         // thisGraph.selectElementContents(txtNode);
         // txtNode.focus();
+    }
+
+    GraphCreator.prototype.getNodeById = function(id) {
+        for (var i=0; i<this.nodes.length; i++) {
+            if (nodes[i].id == id) return nodes[i];
+        }
+        return null;
     }
 
     GraphCreator.prototype.deleteNode = function() {

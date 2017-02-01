@@ -16,17 +16,33 @@ var nodeTypes = {
 function setNodeTypes() {
     $('#subMenuNodeTypeDropdown').empty();
     for (var type in nodeTypes) {
-        $('#subMenuNodeTypeDropdown').append("<li><a href='#'><span class='nodeTypeColor type-color-bg type-color-"
-            + nodeTypes[type] + "'>&nbsp;</span><span class='nodeTypeName'>"
-            + type+"</span></a></li>");
+        $('#subMenuNodeTypeDropdown').append("<li><a href='#'>"
+            + nodeTypeToSubMenuHtml(type) + "</a></li>");
     }
     $('#subMenuNodeTypeDropdown > li > a').off('click').unbind('click').click(function() {
         var selItem = $(this);
         $('#subMenuNodeType').removeClass('unselected').html(selItem.html());
     });
+    updateNodeDropdown();
 
     networkGraph.setTypes(nodeTypes);
     networkGraph.updateGraph();
+}
+function updateNodeDropdown() {
+    $('.subMenuEdgeNodeDropdown').empty();
+    for (var i=0; i<networkGraph.nodes.length; i++) {
+        nodeData = networkGraph.nodes[i];
+        nodeInfoHtml = "<li><a href='#'>" + nodeDataToSubMenuHtml(nodeData) + "</a></li>";
+        $('.subMenuEdgeNodeDropdown').append(nodeInfoHtml);
+    }
+    $('#subMenuEdgeSourceDropdown > li > a').off('click').unbind('click').click(function() {
+        var selItem = $(this);
+        $('#subMenuEdgeSource').removeClass('unselected').html(selItem.html());
+    });
+    $('#subMenuEdgeTargetDropdown > li > a').off('click').unbind('click').click(function() {
+        var selItem = $(this);
+        $('#subMenuEdgeTarget').removeClass('unselected').html(selItem.html());
+    });
 }
 
 var selectedNode = null;
@@ -42,10 +58,7 @@ function setSelectedNode(d3Node, nodeData) {
 
     $('#subMenuNodeName').val(nodeData.title);
     if (nodeData.type != null) {
-        $('#subMenuNodeType').removeClass('unselected').html(
-            "<span class='nodeTypeColor type-color-bg type-color-"
-                + nodeTypes[nodeData.type] + "'>&nbsp;</span><span class='nodeTypeName'>"
-                + nodeData.type+"</span>");
+        $('#subMenuNodeType').removeClass('unselected').html(nodeTypeToSubMenuHtml(nodeData.type));
     } else {
         $('#subMenuNodeType').addClass('unselected').text("Select Type");
     }
@@ -67,21 +80,9 @@ function setSelectedEdge(d3PathG, edgeData) {
     $('.menuDeleteEdge').removeClass('disabled');
 
     $('#subMenuEdgeInfluence').val(edgeData.name);
-
-    $('.subMenuEdgeNodeDropdown').empty();
-    for (var i=0; i<networkGraph.nodes.length; i++) {
-        nodeData = networkGraph.nodes[i];
-        nodeInfoHtml = "<li><a href='#'><span class='nodeName' data-nodeId=" + nodeData.id
-            + ">" + nodeData.title + "</span> (";
-        if (nodeData.type == null) {
-            nodeInfoHtml += "No Type)";
-        } else {
-            nodeInfoHtml += "<span class='nodeTypeColor type-color-bg type-color-"
-                + nodeTypes[nodeData.type] + "'>&nbsp;</span><span class='nodeTypeName'>"
-                + nodeData.type+"</span>)</a></li>";
-        }
-        $('.subMenuEdgeNodeDropdown').append(nodeInfoHtml);
-    }
+    $('#subMenuEdgeSource').removeClass('unselected').html(nodeDataToSubMenuHtml(edgeData.source));
+    $('#subMenuEdgeTarget').removeClass('unselected').html(nodeDataToSubMenuHtml(edgeData.target));
+    console.log(edgeData);
 
     selectedNode = null;
     selectedEdge = {
@@ -102,13 +103,33 @@ function setUnselected() {
     $('#subMenuNodeName').val('');
     $('#subMenuNodeType').addClass('unselected').text('');
     $('#subMenuEdgeInfluence').val('');
+    $('.subMenuEdgeNode').addClass('unselected').text('');
 
     selectedNode = null;
     selectedEdge = null;
 }
 
+function nodeTypeToSubMenuHtml(type) {
+    return "<span class='nodeTypeColor type-color-bg type-color-"
+            + nodeTypes[type] + "'>&nbsp;</span><span class='nodeTypeName'>"
+            + type+"</span>"
+}
+function nodeDataToSubMenuHtml(nodeData) {
+    var nodeInfoHtml = "<span class='nodeName' data-nodeId=" + nodeData.id
+            + ">" + nodeData.title + "</span> (";
+    if (nodeData.type == null) {
+        nodeInfoHtml += "No Type)";
+    } else {
+        nodeInfoHtml += "<span class='nodeTypeColor type-color-bg type-color-"
+            + nodeTypes[nodeData.type] + "'>&nbsp;</span><span class='nodeTypeName'>"
+            + nodeData.type+"</span>)";
+    }
+    return nodeInfoHtml;
+}
+
 function createNode() {
     networkGraph.createNode();
+    updateNodeDropdown();
 }
 function editNode() {
     if (selectedNode != null) {
@@ -120,11 +141,13 @@ function editNode() {
             networkGraph.updateNodeType(selectedNode.d3Node);
         }
         networkGraph.updateGraph();
+        updateNodeDropdown();
     }
 }
 function deleteNode() {
     networkGraph.deleteNode();
     setUnselected();
+    updateNodeDropdown();
 }
 
 function createEdge() {
@@ -132,7 +155,33 @@ function createEdge() {
 }
 function editEdge() {
     if (selectedEdge != null) {
+        var origianlSourceId = selectedEdge.edgeData.source.id,
+            originalTargetId = selectedEdge.edgeData.target.id;
+        var changedSourceId = parseInt($('#subMenuEdgeSource .nodeName').data('nodeid')),
+            changedTargetId = parseInt($('#subMenuEdgeTarget .nodeName').data('nodeid'))
         selectedEdge.edgeData.name = $('#subMenuEdgeInfluence').val();
+
+        if (origianlSourceId == changedSourceId && originalTargetId == changedTargetId) {
+            //pass
+        } else {
+            var changedSource = networkGraph.getNodeById(changedSourceId);
+            var changedTarget = networkGraph.getNodeById(changedTargetId);
+
+            if (changedSourceId == changedTargetId) {
+                console.log('invalid');
+                alert("The nodes of path can not be same!");
+                return;
+            } else if (validEdge(changedSource, changedTarget)) {
+                selectedEdge.edgeData.source = changedSource;
+                selectedEdge.edgeData.target = changedTarget;
+                networkGraph.updateEdges();
+            } else {
+                console.log('invalid');
+                alert("The path is already existed!");
+                return;
+            }
+        }
+
         networkGraph.changeEdgeName(selectedEdge.d3PathG, selectedEdge.edgeData);
         networkGraph.updateGraph();
     }
@@ -140,6 +189,15 @@ function editEdge() {
 function deleteEdge() {
     networkGraph.deleteEdge();
     setUnselected();
+}
+function validEdge(changedSourceNode, changedTargedNode) {
+    for (var i=0; i<networkGraph.edges.length; i++) {
+        if (networkGraph.edges[i].source === changedSourceNode &&
+                networkGraph.edges[i].target === changedTargedNode) {
+            return false;
+        }
+    }
+    return true;
 }
 
 function newFile() {
@@ -166,6 +224,7 @@ function printFile() {
 $(document).ready(function() {
     setUnselected();
     setNodeTypes();
+    updateNodeDropdown();
 
     networkGraph.setSelectedCallbacks(
         function (d3Node, nodeData) {       // onNodeSelected
