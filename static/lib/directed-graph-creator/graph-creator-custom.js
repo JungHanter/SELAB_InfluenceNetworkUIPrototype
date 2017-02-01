@@ -518,12 +518,6 @@ document.onload = (function(d3, saveAs, Blob, undefined){
             // TODO here is to create edge!!!
             var newEdge = {source: mouseDownNode, target: d, name: 0.5, bilateral: false};
             var filtRes = thisGraph.paths.filter(function(d){
-                if (d.source === newEdge.target && d.target === newEdge.source){
-                    // console.log("=== Same Nodes Edges ===");
-                    // console.log(newEdge);
-                    // console.log(d);
-                    // thisGraph.edges.splice(thisGraph.edges.indexOf(d), 1);
-                }
                 return d.source === newEdge.source && d.target === newEdge.target;
             });
             if (!filtRes[0].length){
@@ -535,7 +529,6 @@ document.onload = (function(d3, saveAs, Blob, undefined){
                     return dval.source === newEdge.source && dval.target === newEdge.target;
                 }), newEdge),
                     txtEdge = d3txt.node();
-                // console.log(d3txt);
                 thisGraph.selectElementContents(txtEdge);
                 txtEdge.focus();
             }
@@ -926,6 +919,18 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         //     txtNode = d3txt.node();
         // thisGraph.selectElementContents(txtNode);
         // txtNode.focus();
+    }
+
+    GraphCreator.prototype.createEdge = function(sourceNode, targetNode, name) {
+        var thisGraph = this;
+        var newEdge = {source: sourceNode, target: targetNode, name: name, bilateral: false};
+        var filtRes = thisGraph.paths.filter(function(d){
+            return d.source === newEdge.source && d.target === newEdge.target;
+        });
+        if (!filtRes[0].length) {
+            thisGraph.edges.push(newEdge);
+            thisGraph.updateGraph();
+        }
     }
 
     GraphCreator.prototype.getNodeById = function(id) {

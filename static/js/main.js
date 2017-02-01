@@ -43,6 +43,22 @@ function updateNodeDropdown() {
         var selItem = $(this);
         $('#subMenuEdgeTarget').removeClass('unselected').html(selItem.html());
     });
+
+
+    $('.newEdgeDlgNodeDropdown').empty();
+    for (var i=0; i<networkGraph.nodes.length; i++) {
+        nodeData = networkGraph.nodes[i];
+        nodeInfoHtml = "<li><a href='#'>" + nodeDataToSubMenuHtml(nodeData) + "</a></li>";
+        $('.newEdgeDlgNodeDropdown').append(nodeInfoHtml);
+    }
+    $('#newEdgeDlgSourceDropdown > li > a').off('click').unbind('click').click(function() {
+        var selItem = $(this);
+        $('#newEdgeDlgSource').removeClass('unselected').html(selItem.html());
+    });
+    $('#newEdgeDlgTargetDropdown > li > a').off('click').unbind('click').click(function() {
+        var selItem = $(this);
+        $('#newEdgeDlgTarget').removeClass('unselected').html(selItem.html());
+    });
 }
 
 var selectedNode = null;
@@ -150,7 +166,32 @@ function deleteNode() {
 }
 
 function createEdge() {
+    $('#newEdgeDlgInfluence').val('');
+    if (selectedNode == null) {
+        $('#newEdgeDlgSource').addClass('unselected').html("Select Source Node");
+    } else {
+        $('#newEdgeDlgSource').removeClass('unselected').html(nodeDataToSubMenuHtml(selectedNode.nodeData));
+    }
+    $('#newEdgeDlgTarget').addClass('unselected').html("Select Target Node");
+    $('#newEdgeModal').modal();
+}
+function createEdgeConfirm() {
+    var sourceId = parseInt($('#newEdgeDlgSource .nodeName').data('nodeid')),
+        targetId = parseInt($('#newEdgeDlgTarget .nodeName').data('nodeid')),
+        influence = parseFloat($('#newEdgeDlgInfluence').val());
+    var sourceNode = networkGraph.getNodeById(sourceId),
+        targetNode = networkGraph.getNodeById(targetId);
 
+    if (sourceId == targetId) {
+        openAlertModal("The nodes of path can not be same!");
+        return;
+    } else if (validEdge(sourceNode, targetNode)) {
+        networkGraph.createEdge(sourceNode, targetNode, influence);
+        $('#newEdgeModal').modal('hide');
+    } else {
+        openAlertModal("The path is already existed!");
+        return;
+    }
 }
 function editEdge() {
     if (selectedEdge != null) {
@@ -167,14 +208,14 @@ function editEdge() {
             var changedTarget = networkGraph.getNodeById(changedTargetId);
 
             if (changedSourceId == changedTargetId) {
-                alert("The nodes of path can not be same!");
+                openAlertModal("The nodes of path can not be same!");
                 return;
             } else if (validEdge(changedSource, changedTarget)) {
                 selectedEdge.edgeData.source = changedSource;
                 selectedEdge.edgeData.target = changedTarget;
                 networkGraph.updateEdges();
             } else {
-                alert("The path is already existed!");
+                openAlertModal("The path is already existed!");
                 return;
             }
         }
@@ -187,10 +228,10 @@ function deleteEdge() {
     networkGraph.deleteEdge();
     setUnselected();
 }
-function validEdge(changedSourceNode, changedTargedNode) {
+function validEdge(sourceNode, targedNode) {
     for (var i=0; i<networkGraph.edges.length; i++) {
-        if (networkGraph.edges[i].source === changedSourceNode &&
-                networkGraph.edges[i].target === changedTargedNode) {
+        if (networkGraph.edges[i].source === sourceNode &&
+                networkGraph.edges[i].target === targedNode) {
             return false;
         }
     }
@@ -236,6 +277,8 @@ $(document).ready(function() {
         }
     );
 
+    initUI();
+
     $('#subMenuNodeEditBtn').click(editNode);
     $('#subMenuEdgeEditBtn').click(editEdge);
 
@@ -252,39 +295,26 @@ $(document).ready(function() {
     $('.menuPrint').click(printFile);
 });
 
+function initUI() {
+    $('#subMenuEdgeInfluence, #newEdgeDlgInfluence').blur(function() {
+        var influence = parseFloat($(this).val());
+        if (isNaN(influence) || !isFinite(influence)) {
+            $(this).val(0);
+        } else if (influence < 0) {
+            $(this).val(0);
+        } else if (influence > 1) {
+            $(this).val(1);
+        }
+    });
 
-$('#menuNew').click(function () {
+    $('#btnNewEdgeModalConfirm').click(createEdgeConfirm);
+}
 
-});
-
-$('#menuSave').click(function () {
-
-});
-
-$('#menuSaveAs').click(function () {
-
-});
-
-$('#menuDelete').click(function () {
-
-});
-
-$('#menuPrint').click(function () {
-
-});
-
-$('#menuEditNode').click(function () {
-
-});
-$('#menuEditEdge').click(function () {
-
-});
-$('#menuManageConfidence').click(function () {
-
-});
-$('#menuFindPathSet').click(function () {
-
-});
-$('#menuFindMaxInfluencePath').click(function () {
-
-});
+function openAlertModal(msg, title) {
+    if (title == undefined || title == null || !/\S/.test(title)) {
+        title = "Alert";
+    }
+    $('#alertModalTitle').text(title);
+    $('#alertModalMsg').text(msg);
+    $('#alertModal').modal();
+}

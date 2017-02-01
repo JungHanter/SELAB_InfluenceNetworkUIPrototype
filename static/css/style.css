@@ -56,6 +56,9 @@ body {
 .navbar .sub-menu-container .nav.navbar-nav .btn-group .btn-selection.long-length {
     min-width: 240px;
 }
+.navbar .sub-menu-container .nav.navbar-nav input {
+    min-width: 120px;
+}
 .navbar .sub-menu-container .nav.navbar-nav .sub-menu-divider {
     float : left;
     width: 0;
@@ -140,18 +143,31 @@ body {
 }
 
 #subMenuNodeType .nodeTypeColor,
-.subMenuEdgeNode .nodeTypeColor {
+.subMenuEdgeNode .nodeTypeColor,
+.newEdgeDlgNode .nodeTypeColor {
     width: 20px;
     margin-right: 8px;
     display: inline-block;
 }
 #subMenuNodeTypeDropdown .nodeTypeColor,
-.subMenuEdgeNodeDropdown .nodeTypeColor {
+.subMenuEdgeNodeDropdown .nodeTypeColor,
+.newEdgeDlgNodeDropdown .nodeTypeColor {
     width: 20px;
     margin-right: 8px;
     display: inline-block;
 }
 
+.btn-group ul.dropdown-menu {
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+.modal .modal-body .btn-group .btn-selection {
+    min-width: 200px;
+}
+.modal .modal-body input[type=number].form-control {
+    width: 226px;
+}
 
 .type-color-bg.type-color-red { background-color: #f44336; }
 .type-color-bg.type-color-pink { background-color: #e91e63; }
