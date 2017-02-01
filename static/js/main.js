@@ -82,7 +82,6 @@ function setSelectedEdge(d3PathG, edgeData) {
     $('#subMenuEdgeInfluence').val(edgeData.name);
     $('#subMenuEdgeSource').removeClass('unselected').html(nodeDataToSubMenuHtml(edgeData.source));
     $('#subMenuEdgeTarget').removeClass('unselected').html(nodeDataToSubMenuHtml(edgeData.target));
-    console.log(edgeData);
 
     selectedNode = null;
     selectedEdge = {
@@ -168,7 +167,6 @@ function editEdge() {
             var changedTarget = networkGraph.getNodeById(changedTargetId);
 
             if (changedSourceId == changedTargetId) {
-                console.log('invalid');
                 alert("The nodes of path can not be same!");
                 return;
             } else if (validEdge(changedSource, changedTarget)) {
@@ -176,7 +174,6 @@ function editEdge() {
                 selectedEdge.edgeData.target = changedTarget;
                 networkGraph.updateEdges();
             } else {
-                console.log('invalid');
                 alert("The path is already existed!");
                 return;
             }
