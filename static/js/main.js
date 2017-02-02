@@ -12,6 +12,16 @@ var nodeTypes = {
 };
 var nodeTypeCnt = 3;
 
+var nodeConfidences = {
+    0: {
+        1: 0.2, 2: 0.3
+    }, 1: {
+        0: 0.6, 2: 0.1
+    }, 2: {
+        0: 0.5, 1: 0.7
+    }
+}
+
 function updateNodeTypes() {
     $('#subMenuNodeTypeDropdown').empty();
     for (var tid in nodeTypes) {
@@ -130,7 +140,6 @@ function nodeTypeToSubMenuHtml(typeid) {
             + typeid + "</span>";
 }
 function nodeDataToSubMenuHtml(nodeData) {
-    console.log(nodeData);
     var nodeInfoHtml = "<span class='nodeName' data-nodeId=" + nodeData.id
             + ">" + nodeData.title + "</span> (";
     if (nodeData.type == null) {
@@ -242,14 +251,10 @@ function validEdge(sourceNode, targedNode) {
 }
 
 function manageNodeType() {
-    $('#manageNodeTypeColorList > .list-group-item').each(function() {
-        $(this).attr('class', 'list-group-item');
-    });
-
     $('#manageNodeTypeModal').modal();
 }
 function manageConfidence() {
-
+    $('#manageConfidenceModal').modal();
 }
 
 function newFile() {
@@ -326,8 +331,8 @@ function initUI() {
     });
     $('#btnNewEdgeModalConfirm').click(createEdgeConfirm);
 
-    // About Node Types
     initManageNodeTypeUI();
+    initManageConfidenceUI();
 }
 
 function initManageNodeTypeUI() {
@@ -420,6 +425,8 @@ function initManageNodeTypeUI() {
             + "<span class='typeId'>" + nodeTypeCnt + "</span></a>");
         //add nodeTypes with default
         nodeTypes[nodeTypeCnt] = {name: defaultNewTypeName, color:defaultNewTypeColor};
+        // add confidence table
+        addNodeTypeConfidence(nodeTypeCnt);
         nodeTypeCnt++;
 
         var appendedElem = $('#manageNodeTypeList').find('.list-group-item:last-of-type');
@@ -429,6 +436,7 @@ function initManageNodeTypeUI() {
                 $(this).attr('contenteditable', false);
                 var typeid = parseInt(appendedElem.find('> .typeId').text());
                 nodeTypes[typeid]['name'] = $(this).text();
+                editNodeTypeConfidenceName(typeid);
                 // $('#manageNodeTypeModal .modal-body .row::before').focus();
                 // document.execCommand('blur', false, true);
                 // document.execCommand('selectAll', false, null);
@@ -452,6 +460,8 @@ function initManageNodeTypeUI() {
                     $(this).attr('contenteditable', false);
                     var typeid = parseInt(nowElem.find('> .typeId').text());
                     nodeTypes[typeid]['name'] = $(this).text();
+                    editNodeTypeConfidenceName(typeid);
+
                     // if (selectedNodeTypeElem != null)
                     if (selectedNodeTypeElem == nowElem)
                         selectedNodeTypeElem.attr('class', classes);
@@ -474,6 +484,8 @@ function initManageNodeTypeUI() {
             $('#btnEditNodeTypeName').attr('disabled', true);
             $('#btnDeleteNodeType').attr('disabled', true);
             $('#manageNodeTypeColorList').css('visibility', 'hidden');
+
+            deleteNodeTypeConfidence(typeid);
         }
     });
 
@@ -492,8 +504,10 @@ function initManageNodeTypeUI() {
                 .addClass('type-color-text').addClass('type-color-' + color);
             selectedNodeTypeElem.find('> .typeColor').removeClass('type-color-' + prevColor)
                 .addClass('type-color-' + color).data('color', color);
+
             var typeId = parseInt(selectedNodeTypeElem.find('> .typeId').text());
             nodeTypes[typeId]['color'] = color;
+            editNodeTypeConfidenceName(typeId);
         }
     });
 }
@@ -535,6 +549,197 @@ function nodeTypeManageListItemAddClick(elem) {
             });
         }
     });
+}
+
+function initManageConfidenceUI() {
+    //fixed header table reference http://codepen.io/ajkochanowicz/pen/KHdih
+    var confidenceTable, fixedTable;
+    fixedTable = function (el) {
+        var $body, $header, $sidebar;
+        $body = $(el).find('.fixedTable-body');
+        $sidebar = $(el).find('.fixedTable-sidebar table');
+        $header = $(el).find('.fixedTable-header table');
+        return $($body).scroll(function () {
+            $($sidebar).css('margin-top', -$($body).scrollTop());
+            return $($header).css('margin-left', -$($body).scrollLeft());
+        });
+    };
+    confidenceTable = new fixedTable($('#confidenceTable'));
+
+    //set table from nodetypes
+    $('#confidenceTable .fixedTable-header thead tr').empty();
+    $('#confidenceTable .fixedTable-sidebar tbody').empty();
+    $('#confidenceTable .fixedTable-body tbody').empty();
+
+    var typeList = [];
+    for (var typeid in nodeTypes) {
+        typeList.push(typeid);
+        addNodeTypeConfidence(typeid);
+    }
+}
+
+function addNodeTypeConfidence(typeid) {
+    var nodeType = nodeTypes[typeid];
+    var prevTypeIds = [];
+    // var prevTypeIds = {};
+    $('#confidenceTable .fixedTable-header thead tr th').each(function (idx, elem) {
+        prevTypeIds.push(parseInt($(this).data('typeid')));
+        // prevTypeIds[idx] = parseInt($(this).data('typeid'));
+    });
+
+    $('#confidenceTable .fixedTable-header thead tr').append(
+        "<th class='type-color-bg type-color-text type-color-" + nodeType['color']
+        + "' data-typeid=" + typeid + ">" + nodeType['name'] + "</th>"
+    );
+
+    $('#confidenceTable .fixedTable-sidebar tbody').append(
+        "<tr><th class='type-color-bg type-color-text type-color-" + nodeType['color']
+        + "' data-typeid=" + typeid + ">" + nodeType['name'] + "</th></tr>"
+    );
+
+    $('#confidenceTable .fixedTable-body tbody tr').each(function (idx, elem) {
+        var sourceId = prevTypeIds[idx];
+        var defaultConfidence = 0.5;
+        if (sourceId in nodeConfidences) {
+            if (typeid in nodeConfidences[sourceId]) {
+                defaultConfidence = nodeConfidences[sourceId][typeid];
+            } else {
+                nodeConfidences[sourceId][typeid] = defaultConfidence;
+            }
+        } else {
+            nodeConfidences[sourceId] = {};
+            nodeConfidences[sourceId][typeid] = defaultConfidence;
+        }
+
+        $(elem).append(
+            "<td class='td-input'><input type='number' step=0.01 min=0 max=1 "
+            + "data-source=" + sourceId + " data-target=" + typeid + " /></td>"
+        );
+
+        var appendedElem = $(elem).find('> td:last-of-type');
+        appendedElem.find('> input').val(defaultConfidence).blur(function() {
+            var sourceId = parseInt($(this).data('source')),
+                targetId = parseInt($(this).data('target'));
+            var confidence = parseFloat($(this).val());
+            if (isNaN(confidence) || !isFinite(confidence)) {
+                confidence = 0.5;
+                $(this).val(confidence);
+            } else if (confidence < 0) {
+                confidence = 0;
+                $(this).val(confidence);
+            } else if (confidence > 1) {
+                confidence = 1;
+                $(this).val(confidence);
+            }
+            nodeConfidences[sourceId][targetId] = confidence;
+        });
+    });
+
+    var newRowHtml = "<tr>";
+    for (var idx=0; idx<prevTypeIds.length; idx++) {
+        var targetId = prevTypeIds[idx];
+        var defaultConfidence = 0.5;
+        if (typeid in nodeConfidences) {
+            if (targetId in nodeConfidences[typeid]) {
+                //pass
+            } else {
+                nodeConfidences[typeid][targetId] = defaultConfidence;
+            }
+        } else {
+            nodeConfidences[typeid] = {};
+            nodeConfidences[typeid][targetId] = defaultConfidence;
+        }
+
+        newRowHtml += "<td class='td-input'><input type='number' step=0.01 min=0 max=1 "
+            + "data-source=" + typeid + " data-target=" + targetId + " /></td>"
+    }
+    newRowHtml += "<td class='td-empty'></td></tr>"
+    $('#confidenceTable .fixedTable-body tbody').append(newRowHtml);
+    var appendedElem = $('#confidenceTable .fixedTable-body tbody > tr:last-of-type');
+    appendedElem.find('> td > input').each(function (idx, elem) {
+        var sourceId = parseInt($(elem).data('source')),
+            targetId = parseInt($(elem).data('target'));
+        $(this).val(nodeConfidences[sourceId][targetId]);
+    });
+    appendedElem.find('> td > input').blur(function() {
+        var sourceId = parseInt($(this).data('source')),
+            targetId = parseInt($(this).data('target'));
+        var confidence = parseFloat($(this).val());
+        if (isNaN(confidence) || !isFinite(confidence)) {
+            confidence = 0.5;
+            $(this).val(confidence);
+        } else if (confidence < 0) {
+            confidence = 0;
+            $(this).val(confidence);
+        } else if (confidence > 1) {
+            confidence = 1;
+            $(this).val(confidence);
+        }
+        nodeConfidences[sourceId][targetId] = confidence;
+    });
+}
+
+function editNodeTypeConfidenceName(typeid) {
+    $('#confidenceTable .fixedTable-header thead tr th').each(function (idx, elem) {
+        if (typeid == parseInt($(this).data('typeid'))) {
+            $(this).attr('class', 'type-color-bg type-color-text')
+                .addClass('type-color-' + nodeTypes[typeid]['color'])
+                .text(nodeTypes[typeid]['name']);
+        }
+    });
+
+    var removingSide = null;
+    $('#confidenceTable .fixedTable-sidebar tbody tr th').each(function (idx, elem) {
+        if (typeid == parseInt($(this).data('typeid'))) {
+            $(this).attr('class', 'type-color-bg type-color-text')
+                .addClass('type-color-' + nodeTypes[typeid]['color'])
+                .text(nodeTypes[typeid]['name']);
+        }
+    });
+}
+
+function deleteNodeTypeConfidence(typeid) {
+    var removingHeader = null;
+    $('#confidenceTable .fixedTable-header thead tr th').each(function (idx, elem) {
+        if (typeid == parseInt($(this).data('typeid'))) {
+            removingHeader = $(this);
+        }
+    });
+    removingHeader.remove();
+
+    var removingSide = null;
+    $('#confidenceTable .fixedTable-sidebar tbody tr').each(function (idx, elem) {
+        if (typeid == parseInt($(this).find('> th').data('typeid'))) {
+            removingSide = $(this);
+        }
+    });
+    removingSide.remove();
+
+    var removingRow = null;
+    $('#confidenceTable .fixedTable-body tbody tr').each(function (idx, elem) {
+        if (typeid == parseInt($(this).find('> td.td-input:first-of-type > input').data('source'))) {
+            removingRow = $(this);
+        }
+    });
+    if (removingRow == null) {
+        removingRow = $('#confidenceTable .fixedTable-body tbody tr');
+    }
+    removingRow.remove();
+
+    var removingColumns = [];
+    $('#confidenceTable .fixedTable-body tbody tr td').each(function (idx, elem) {
+        if (typeid == parseInt($(this).find('> input').data('target'))) {
+            removingColumns.push($(this));
+        }
+    });
+    for (var i=0; i<removingColumns.length; i++) {
+        removingColumns[i].remove();
+    }
+
+    delete nodeConfidences[typeid];
+    for (var source in nodeConfidences) {
+        delete nodeConfidences[source][typeid];
+    }
 }
 
 function openAlertModal(msg, title) {

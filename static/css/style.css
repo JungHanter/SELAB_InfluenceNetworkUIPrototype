@@ -210,6 +210,76 @@ body {
     border-color: #bdbdbd;
 }
 
+#manageConfidenceModal .modal-body .table-container {
+    height: 340px;
+}
+#confidenceTable th, #confidenceTable td {
+    /*width: 120px;*/
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
+    /*width: 120px;*/
+    /*height: 38px;*/
+}
+
+
+.fixedTable .table {
+    background-color: white;
+    width: auto;
+}
+.fixedTable .table tr td,
+.fixedTable .table tr th {
+    min-width: 120px;
+    max-width: 120px;
+    width: 120px;
+    min-height: 34px;
+    max-height: 34px;
+    height: 34px;
+    padding: 6px;
+    text-align: center;
+
+    overflow-x: hidden;
+    text-overflow-ellipsis: true;
+    text-overflow-mode: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.fixedTable-header {
+    width: auto;
+    height: 34px;
+    margin-left: 120px;
+    overflow: hidden;
+    /*border-bottom: 1px solid #CCC;*/
+}
+.fixedTable-sidebar {
+    width: 120px;
+    height: 310px;
+    float: left;
+    overflow: hidden;
+    /*border-right: 1px solid #CCC;*/
+}
+.fixedTable-body {
+    overflow: auto;
+    width: calc(100% - 120px);
+    height: 310px;
+    float: left;
+}
+#confidenceTable.fixedTable .table tr td.td-input {
+    padding: 0px;
+}
+#confidenceTable.fixedTable .table tr td.td-empty {
+    background-color: #eee;
+}
+#confidenceTable.fixedTable .table tr td.td-input input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    padding: 0;
+    text-align: center;
+}
+
+
+
+
 .type-color-bg.type-color-red { background-color: #f44336 !important; }
 .type-color-text.type-color-red { color: white !important; }
 .type-color-bg.type-color-pink { background-color: #e91e63 !important; }
