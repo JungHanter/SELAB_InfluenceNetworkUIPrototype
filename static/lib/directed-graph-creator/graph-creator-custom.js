@@ -820,15 +820,17 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         var thisGraph = this;
         // if (gs == undefined || gs == null)
         //     gs = thisGraph.circles;
-        // console.log(gs);
-        for (var t in thisGraph.types) {
-            gs.classed(thisGraph.consts.typeColorHead + this.types[t], false);
-        }
+        //add color
         gs.each(function(d) {
+            //remove color
+            $(this).removeClass(function(index, className) {
+                return (className.match (/(^|\s)type-color-\S+/g) || []).join(' ');
+            });
+            //add color
             if (d.type != undefined && d.type != null && /\S/.test(d.type)) {
                // this.classed(thisGraph.consts.typeColorHead + d.type, true);
                 if (d.type in thisGraph.types) {
-                    $(this).addClass(thisGraph.consts.typeColorHead + thisGraph.types[d.type]);
+                    $(this).addClass(thisGraph.consts.typeColorHead + thisGraph.types[d.type]['color']);
                 } else {    // if existed type is deleted
                     d.type = null;
                 }
@@ -963,7 +965,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     }
 
     GraphCreator.prototype.setTypes = function(types) {
-        this.types = types || {};
+        this.types = types;
         this.updateNodeType(this.circles);
     }
 
@@ -989,23 +991,23 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         yLoc = 150;
 
     // initial node data
-    var nodes = [{title: "Node 0", id: 0, x: xLoc, y: yLoc, type: 'A'},
-                 {title: "Node 1", id: 1, x: xLoc, y: yLoc + 300, type: 'B'},
+    var nodes = [{title: "Node 0", id: 0, x: xLoc, y: yLoc, type: 0},
+                 {title: "Node 1", id: 1, x: xLoc, y: yLoc + 300, type: 1},
                  {title: "Node 2", id: 2, x: xLoc+200, y: yLoc + 150, type: null}];
-        var nodes = [{title: "Node 0", id: 0, x: xLoc, y: yLoc, type: null},
-                 {title: "Node 1", id: 1, x: xLoc, y: yLoc + 300, type: null},
-                 {title: "Node 2", id: 2, x: xLoc+200, y: yLoc + 150, type: null}];
+    // var nodes = [{title: "Node 0", id: 0, x: xLoc, y: yLoc, type: null},
+    //          {title: "Node 1", id: 1, x: xLoc, y: yLoc + 300, type: null},
+    //          {title: "Node 2", id: 2, x: xLoc+200, y: yLoc + 150, type: null}];
     var edges = [{source: nodes[2], target: nodes[0], name: 1},
                  {source: nodes[0], target: nodes[2], name: 0.12},
                  {source: nodes[1], target: nodes[2], name: 0.69},
                  {source: nodes[0], target: nodes[1], name: 0.44}];
     var types = {
-        "A": "red",
-        "B": "yellow",
-        "C": "blue"
-        // 0: {name: "A", color: "red"},
-        // 1: {name: "B", color: "yellow"},
-        // 2: {name: "C", color: "blue"}
+        // "A": "red",
+        // "B": "yellow",
+        // "C": "blue"
+        0: {name: "A", color: "red"},
+        1: {name: "B", color: "yellow"},
+        2: {name: "C", color: "blue"}
     };
 
     /** MAIN SVG **/

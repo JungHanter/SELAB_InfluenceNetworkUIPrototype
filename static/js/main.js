@@ -6,26 +6,25 @@ var typeColors = [
 ];
 
 var nodeTypes = {
-    // "A": "red",
-    // "B": "yellow",
-    // "C": "blue",
-    // "D": "teal",
-    // "E": "indigo"
+    0: {name: "A", color: "red"},
+    1: {name: "B", color: "blue"},
+    2: {name: "C", color: "yellow"}
 };
+var nodeTypeCnt = 3;
 
 function updateNodeTypes() {
     $('#subMenuNodeTypeDropdown').empty();
-    for (var type in nodeTypes) {
+    for (var tid in nodeTypes) {
         $('#subMenuNodeTypeDropdown').append("<li><a href='#'>"
-            + nodeTypeToSubMenuHtml(type) + "</a></li>");
+            + nodeTypeToSubMenuHtml(tid) + "</a></li>");
     }
     $('#subMenuNodeTypeDropdown > li > a').off('click').unbind('click').click(function() {
         var selItem = $(this);
         $('#subMenuNodeType').removeClass('unselected').html(selItem.html());
     });
-    updateNodeDropdown();
 
     networkGraph.setTypes(nodeTypes);
+    updateNodeDropdown();
     networkGraph.updateGraph();
 }
 function updateNodeDropdown() {
@@ -124,20 +123,23 @@ function setUnselected() {
     selectedEdge = null;
 }
 
-function nodeTypeToSubMenuHtml(type) {
+function nodeTypeToSubMenuHtml(typeid) {
     return "<span class='nodeTypeColor type-color-bg type-color-"
-            + nodeTypes[type] + "'>&nbsp;</span><span class='nodeTypeName'>"
-            + type+"</span>"
+            + nodeTypes[typeid]['color'] + "'>&nbsp;</span><span class='nodeTypeName'>"
+            + nodeTypes[typeid]['name'] +"</span><span class='nodeTypeId'>"
+            + typeid + "</span>";
 }
 function nodeDataToSubMenuHtml(nodeData) {
+    console.log(nodeData);
     var nodeInfoHtml = "<span class='nodeName' data-nodeId=" + nodeData.id
             + ">" + nodeData.title + "</span> (";
     if (nodeData.type == null) {
         nodeInfoHtml += "No Type)";
     } else {
         nodeInfoHtml += "<span class='nodeTypeColor type-color-bg type-color-"
-            + nodeTypes[nodeData.type] + "'>&nbsp;</span><span class='nodeTypeName'>"
-            + nodeData.type+"</span>)";
+            + nodeTypes[nodeData.type]['color'] + "'>&nbsp;</span><span class='nodeTypeName'>"
+            + nodeTypes[nodeData.type]['name'] +"</span><span class='nodeTypeId'>" +
+            + nodeData.type + "</span>)";
     }
     return nodeInfoHtml;
 }
@@ -150,7 +152,8 @@ function editNode() {
     if (selectedNode != null) {
         var origianlType = selectedNode.nodeData.type;
         selectedNode.nodeData.title = $('#subMenuNodeName').val();
-        selectedNode.nodeData.type = $('#subMenuNodeType .nodeTypeName').text();
+        // selectedNode.nodeData.type = $('#subMenuNodeType .nodeTypeName').text();
+        selectedNode.nodeData.type = parseInt($('#subMenuNodeType .nodeTypeId').text());
         networkGraph.changeNodeTitle(selectedNode.d3Node, selectedNode.nodeData.title);
         if (origianlType != selectedNode.nodeData.type) {
             networkGraph.updateNodeType(selectedNode.d3Node);
@@ -239,17 +242,9 @@ function validEdge(sourceNode, targedNode) {
 }
 
 function manageNodeType() {
-    // $('#manageNodeTypeList').empty();
-    // for (var type in nodeTypes) {
-    //     $('#manageNodeTypeList').append("<a href='#' class='list-group-item'>"
-    //         + type + );
-    // }
-
     $('#manageNodeTypeColorList > .list-group-item').each(function() {
         $(this).attr('class', 'list-group-item');
     });
-
-
 
     $('#manageNodeTypeModal').modal();
 }
@@ -281,7 +276,6 @@ function printFile() {
 $(document).ready(function() {
     setUnselected();
     updateNodeTypes();
-    updateNodeDropdown();
 
     networkGraph.setSelectedCallbacks(
         function (d3Node, nodeData) {       // onNodeSelected
@@ -339,13 +333,52 @@ function initUI() {
 function initManageNodeTypeUI() {
     $('#btnEditNodeTypeName').attr('disabled', true);
     $('#btnDeleteNodeType').attr('disabled', true);
+    $('#manageNodeTypeColorList').css('visibility', 'hidden');
+
+    $('#manageNodeTypeModal').on('hide.bs.modal', function (e) {
+        setUnselected();
+        updateNodeTypes();
+    });
+    $('#manageNodeTypeModal').on('hidden.bs.modal', function (e) {
+        $('#manageNodeTypeColorList').css('visibility', 'hidden');
+        $('#manageNodeTypeList > .list-group-item').each(function() {
+            $(this).attr('class', 'list-group-item');
+        });
+        $('#manageNodeTypeColorList > .list-group-item').each(function() {
+            $(this).attr('class', 'list-group-item');
+        });
+    });
 
     $('#manageNodeTypeList').empty();
+    for (var typeid in nodeTypes) {
+        $('#manageNodeTypeList').append("<a href='#' class='list-group-item'>"
+            + "<span class='nodeTypeName'>" + nodeTypes[typeid]['name'] + "</span>"
+            + "<span class='typeColor type-color-bg type-color-" + nodeTypes[typeid]['color']
+            + "' data-color='" + nodeTypes[typeid]['color'] + "'>&nbsp;</span>"
+            + "<span class='typeId'>" + typeid + "</span></a>");
+        var appendedElem = $('#manageNodeTypeList').find('.list-group-item:last-of-type');
+        nodeTypeManageListItemAddClick(appendedElem);
+    }
+
     $('#btnAddNodeType').click(function() {
+        var usedNames = [];
+        var usedColors = [];
+        for (var typeid in nodeTypes) {
+            usedNames.push(nodeTypes[typeid]['name']);
+            usedColors.push(nodeTypes[typeid]['color']);
+        }
+
         var defaultNewTypeName = 'New Type';
         var defaultCnt = 1;
         while (true) {
-            if (defaultNewTypeName in nodeTypes) {
+            var used = false;
+            for (var k=0; k<usedNames.length; k++) {
+                if (defaultNewTypeName == usedNames[k]) {
+                    used = true;
+                    break;
+                }
+            }
+            if (used) {
                 defaultCnt++;
                 defaultNewTypeName = 'New Type ' + defaultCnt;
             } else {
@@ -353,12 +386,8 @@ function initManageNodeTypeUI() {
             }
         }
 
-        var defaultTypeColor = null;
-        var usedColors = [];
+        var defaultNewTypeColor = null;
         var remainedColors = [];
-        for (var type in nodeTypes) {
-            usedColors.push(nodeTypes[type]);
-        }
         for (var i=0; i<typeColors.length; i++) {
             var color = typeColors[i];
             var used = false;
@@ -372,14 +401,11 @@ function initManageNodeTypeUI() {
         }
         if (remainedColors.length > 0) {
             var randColorIdx = Math.floor((Math.random() * remainedColors.length));
-            defaultTypeColor = remainedColors[randColorIdx];
+            defaultNewTypeColor = remainedColors[randColorIdx];
         } else {
             var randColorIdx = Math.floor((Math.random() * typeColors.length));
-            defaultTypeColor = typeColors[randColorIdx];
+            defaultNewTypeColor = typeColors[randColorIdx];
         }
-
-        //add nodeTypes with default
-        nodeTypes[defaultNewTypeName] = defaultTypeColor;
 
         //reset active other list item
         $('#manageNodeTypeList > .list-group-item').each(function() {
@@ -389,33 +415,20 @@ function initManageNodeTypeUI() {
         //add list item
         $('#manageNodeTypeList').append("<a href='#' class='list-group-item'>"
             + "<span class='nodeTypeName'>" + defaultNewTypeName + "</span>"
-            + "<span class='typeColor type-color-bg type-color-" + defaultTypeColor
-            + "' data-color='" + defaultTypeColor + "'>&nbsp;</span></a>");
+            + "<span class='typeColor type-color-bg type-color-" + defaultNewTypeColor
+            + "' data-color='" + defaultNewTypeColor + "'>&nbsp;</span>"
+            + "<span class='typeId'>" + nodeTypeCnt + "</span></a>");
+        //add nodeTypes with default
+        nodeTypes[nodeTypeCnt] = {name: defaultNewTypeName, color:defaultNewTypeColor};
+        nodeTypeCnt++;
+
         var appendedElem = $('#manageNodeTypeList').find('.list-group-item:last-of-type');
-        appendedElem.click(function() {
-            if ($(this).hasClass('active')) {   //active->inactive
-                selectedNodeTypeElem = null;
-                $(this).find('> .nodeTypeName').blur();
-                $(this).attr('class', 'list-group-item');
-
-                $('#btnEditNodeTypeName').attr('disabled', true);
-                $('#btnDeleteNodeType').attr('disabled', true);
-            } else {    //inactive->active
-                selectedNodeTypeElem = $(this);
-                var typeColor = $(this).find('> .typeColor').data('color');
-                $('#manageNodeTypeList > .list-group-item').each(function() {
-                    $(this).attr('class', 'list-group-item');
-                });
-                $(this).addClass('active').addClass('type-color-bg')
-                    .addClass('type-color-text').addClass('type-color-'+typeColor);
-
-                $('#btnEditNodeTypeName').attr('disabled', false);
-                $('#btnDeleteNodeType').attr('disabled', false);
-            }
-        });
+        nodeTypeManageListItemAddClick(appendedElem);
         appendedElem.find('> .nodeTypeName').attr('contenteditable', true)
             .blur(function() {
                 $(this).attr('contenteditable', false);
+                var typeid = parseInt(appendedElem.find('> .typeId').text());
+                nodeTypes[typeid]['name'] = $(this).text();
                 // $('#manageNodeTypeModal .modal-body .row::before').focus();
                 // document.execCommand('blur', false, true);
                 // document.execCommand('selectAll', false, null);
@@ -437,6 +450,8 @@ function initManageNodeTypeUI() {
             selectedNodeTypeElem.find('> .nodeTypeName').attr('contenteditable', true)
                 .blur(function() {
                     $(this).attr('contenteditable', false);
+                    var typeid = parseInt(nowElem.find('> .typeId').text());
+                    nodeTypes[typeid]['name'] = $(this).text();
                     // if (selectedNodeTypeElem != null)
                     if (selectedNodeTypeElem == nowElem)
                         selectedNodeTypeElem.attr('class', classes);
@@ -451,10 +466,14 @@ function initManageNodeTypeUI() {
 
     $('#btnDeleteNodeType').click(function() {
         if (selectedNodeTypeElem != null) {
+            var typeid = parseInt(selectedNodeTypeElem.find('> .typeId').text());
+            delete nodeTypes[typeid];
+
             selectedNodeTypeElem.remove();
             selectedNodeTypeElem = null;
             $('#btnEditNodeTypeName').attr('disabled', true);
             $('#btnDeleteNodeType').attr('disabled', true);
+            $('#manageNodeTypeColorList').css('visibility', 'hidden');
         }
     });
 
@@ -462,9 +481,59 @@ function initManageNodeTypeUI() {
         var color = $(this).data('color');
         $('#manageNodeTypeColorList > .list-group-item').each(function() {
             $(this).attr('class', 'list-group-item');
-        })
+        });
         $(this).addClass('active').addClass('type-color-bg')
             .addClass('type-color-text').addClass('type-color-'+color);
+
+        if (selectedNodeTypeElem != null) {
+            var prevColor = selectedNodeTypeElem.find('> .typeColor').data('color');
+            selectedNodeTypeElem.attr('class', 'list-group-item active');
+            selectedNodeTypeElem.addClass('type-color-bg')
+                .addClass('type-color-text').addClass('type-color-' + color);
+            selectedNodeTypeElem.find('> .typeColor').removeClass('type-color-' + prevColor)
+                .addClass('type-color-' + color).data('color', color);
+            var typeId = parseInt(selectedNodeTypeElem.find('> .typeId').text());
+            nodeTypes[typeId]['color'] = color;
+        }
+    });
+}
+
+function nodeTypeManageListItemAddClick(elem) {
+    elem.click(function() {
+        if ($(this).hasClass('active')) {   //active->inactive
+            selectedNodeTypeElem = null;
+            $(this).find('> .nodeTypeName').blur();
+            $(this).attr('class', 'list-group-item');
+
+            $('#btnEditNodeTypeName').attr('disabled', true);
+            $('#btnDeleteNodeType').attr('disabled', true);
+            $('#manageNodeTypeColorList').css('visibility', 'hidden');
+            $('#manageNodeTypeColorList > .list-group-item').each(function() {
+                $(this).attr('class', 'list-group-item');
+            });
+        } else {    //inactive->active
+            selectedNodeTypeElem = $(this);
+            var typeColor = $(this).find('> .typeColor').data('color');
+            $('#manageNodeTypeList > .list-group-item').each(function() {
+                $(this).attr('class', 'list-group-item');
+            });
+            $(this).addClass('active').addClass('type-color-bg')
+                .addClass('type-color-text').addClass('type-color-'+typeColor);
+
+            $('#btnEditNodeTypeName').attr('disabled', false);
+            $('#btnDeleteNodeType').attr('disabled', false);
+            $('#manageNodeTypeColorList').css('visibility', 'visible');
+            $('#manageNodeTypeColorList > .list-group-item').each(function() {
+                if ($(this).data('color') == typeColor) {
+                    $(this).addClass('active').addClass('type-color-bg')
+                        .addClass('type-color-text').addClass('type-color-'+typeColor);
+                    $('#manageNodeTypeColorList').focus();
+                    $(this).focus().blur();
+                } else {
+                    $(this).attr('class', 'list-group-item');
+                }
+            });
+        }
     });
 }
 

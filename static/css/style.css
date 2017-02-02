@@ -157,6 +157,15 @@ body {
     display: inline-block;
 }
 
+#subMenuNodeType .nodeTypeId,
+.subMenuEdgeNode .nodeTypeId,
+.newEdgeDlgNode .nodeTypeId,
+#subMenuNodeTypeDropdown .nodeTypeId,
+.subMenuEdgeNodeDropdown .nodeTypeId,
+.newEdgeDlgNodeDropdown .nodeTypeId {
+    display: none;
+}
+
 .btn-group ul.dropdown-menu {
     max-height: 300px;
     overflow-y: scroll;
@@ -188,6 +197,9 @@ body {
     width: 20px;
     display: inline-block;
     float: right;
+}
+#manageNodeTypeList .typeId {
+    display: none;
 }
 #manageNodeTypeList .list-group-item.active,
 #manageNodeTypeList .list-group-item.active:hover,
