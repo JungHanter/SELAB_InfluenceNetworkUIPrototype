@@ -2,18 +2,18 @@ var typeColors = [
     'red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue',
     'light-blue', 'cyan', 'teal', 'green', 'light-green',
     'lime', 'yellow', 'amber', 'orange', 'deep-orange',
-    'brown',' grey', 'blue-grey'
+    'brown','grey', 'blue-grey'
 ];
 
 var nodeTypes = {
-    "A": "red",
-    "B": "yellow",
-    "C": "blue",
-    "D": "teal",
-    "E": "indigo"
+    // "A": "red",
+    // "B": "yellow",
+    // "C": "blue",
+    // "D": "teal",
+    // "E": "indigo"
 };
 
-function setNodeTypes() {
+function updateNodeTypes() {
     $('#subMenuNodeTypeDropdown').empty();
     for (var type in nodeTypes) {
         $('#subMenuNodeTypeDropdown').append("<li><a href='#'>"
@@ -238,6 +238,25 @@ function validEdge(sourceNode, targedNode) {
     return true;
 }
 
+function manageNodeType() {
+    // $('#manageNodeTypeList').empty();
+    // for (var type in nodeTypes) {
+    //     $('#manageNodeTypeList').append("<a href='#' class='list-group-item'>"
+    //         + type + );
+    // }
+
+    $('#manageNodeTypeColorList > .list-group-item').each(function() {
+        $(this).attr('class', 'list-group-item');
+    });
+
+
+
+    $('#manageNodeTypeModal').modal();
+}
+function manageConfidence() {
+
+}
+
 function newFile() {
     networkGraph.deleteGraph();
     setUnselected();
@@ -261,7 +280,7 @@ function printFile() {
 
 $(document).ready(function() {
     setUnselected();
-    setNodeTypes();
+    updateNodeTypes();
     updateNodeDropdown();
 
     networkGraph.setSelectedCallbacks(
@@ -287,6 +306,9 @@ $(document).ready(function() {
     $('.menuNewEdge').click(createEdge);
     $('.menuDeleteEdge').click(deleteEdge);
 
+    $('.menuManageNodeType').click(manageNodeType);
+    $('.menuManageConfidence').click(manageConfidence);
+
     $('.menuNew').click(newFile);
     $('.menuLoad').click(loadFile);
     $('.menuSave').click(saveFile);
@@ -295,7 +317,9 @@ $(document).ready(function() {
     $('.menuPrint').click(printFile);
 });
 
+var selectedNodeTypeElem = null;
 function initUI() {
+    // About Edge
     $('#subMenuEdgeInfluence, #newEdgeDlgInfluence').blur(function() {
         var influence = parseFloat($(this).val());
         if (isNaN(influence) || !isFinite(influence)) {
@@ -306,8 +330,142 @@ function initUI() {
             $(this).val(1);
         }
     });
-
     $('#btnNewEdgeModalConfirm').click(createEdgeConfirm);
+
+    // About Node Types
+    initManageNodeTypeUI();
+}
+
+function initManageNodeTypeUI() {
+    $('#btnEditNodeTypeName').attr('disabled', true);
+    $('#btnDeleteNodeType').attr('disabled', true);
+
+    $('#manageNodeTypeList').empty();
+    $('#btnAddNodeType').click(function() {
+        var defaultNewTypeName = 'New Type';
+        var defaultCnt = 1;
+        while (true) {
+            if (defaultNewTypeName in nodeTypes) {
+                defaultCnt++;
+                defaultNewTypeName = 'New Type ' + defaultCnt;
+            } else {
+                break;
+            }
+        }
+
+        var defaultTypeColor = null;
+        var usedColors = [];
+        var remainedColors = [];
+        for (var type in nodeTypes) {
+            usedColors.push(nodeTypes[type]);
+        }
+        for (var i=0; i<typeColors.length; i++) {
+            var color = typeColors[i];
+            var used = false;
+            for (var k=0; k<usedColors.length; k++) {
+                if (color == usedColors[k]) {
+                    used = true;
+                    break;
+                }
+            }
+            if (!used) remainedColors.push(color);
+        }
+        if (remainedColors.length > 0) {
+            var randColorIdx = Math.floor((Math.random() * remainedColors.length));
+            defaultTypeColor = remainedColors[randColorIdx];
+        } else {
+            var randColorIdx = Math.floor((Math.random() * typeColors.length));
+            defaultTypeColor = typeColors[randColorIdx];
+        }
+
+        //add nodeTypes with default
+        nodeTypes[defaultNewTypeName] = defaultTypeColor;
+
+        //reset active other list item
+        $('#manageNodeTypeList > .list-group-item').each(function() {
+            $(this).attr('class', 'list-group-item');
+        });
+
+        //add list item
+        $('#manageNodeTypeList').append("<a href='#' class='list-group-item'>"
+            + "<span class='nodeTypeName'>" + defaultNewTypeName + "</span>"
+            + "<span class='typeColor type-color-bg type-color-" + defaultTypeColor
+            + "' data-color='" + defaultTypeColor + "'>&nbsp;</span></a>");
+        var appendedElem = $('#manageNodeTypeList').find('.list-group-item:last-of-type');
+        appendedElem.click(function() {
+            if ($(this).hasClass('active')) {   //active->inactive
+                selectedNodeTypeElem = null;
+                $(this).find('> .nodeTypeName').blur();
+                $(this).attr('class', 'list-group-item');
+
+                $('#btnEditNodeTypeName').attr('disabled', true);
+                $('#btnDeleteNodeType').attr('disabled', true);
+            } else {    //inactive->active
+                selectedNodeTypeElem = $(this);
+                var typeColor = $(this).find('> .typeColor').data('color');
+                $('#manageNodeTypeList > .list-group-item').each(function() {
+                    $(this).attr('class', 'list-group-item');
+                });
+                $(this).addClass('active').addClass('type-color-bg')
+                    .addClass('type-color-text').addClass('type-color-'+typeColor);
+
+                $('#btnEditNodeTypeName').attr('disabled', false);
+                $('#btnDeleteNodeType').attr('disabled', false);
+            }
+        });
+        appendedElem.find('> .nodeTypeName').attr('contenteditable', true)
+            .blur(function() {
+                $(this).attr('contenteditable', false);
+                // $('#manageNodeTypeModal .modal-body .row::before').focus();
+                // document.execCommand('blur', false, true);
+                // document.execCommand('selectAll', false, null);
+            }).keydown(function(e) {
+                if (e.which == 13) {
+                    $(this).blur();
+                }
+            }).focus();
+        // document.execCommand('selectAll', false, null);
+    });
+
+    $('#btnEditNodeTypeName').click(function() {
+        if (selectedNodeTypeElem != null) {
+            var typeColor = selectedNodeTypeElem.find('> .typeColor').data('color');
+            var nowElem = selectedNodeTypeElem;
+            var classes = selectedNodeTypeElem.attr('class');
+            selectedNodeTypeElem.attr('class', 'list-group-item');
+
+            selectedNodeTypeElem.find('> .nodeTypeName').attr('contenteditable', true)
+                .blur(function() {
+                    $(this).attr('contenteditable', false);
+                    // if (selectedNodeTypeElem != null)
+                    if (selectedNodeTypeElem == nowElem)
+                        selectedNodeTypeElem.attr('class', classes);
+                }).keydown(function(e) {
+                    if (e.which == 13) {
+                        $(this).blur();
+                    }
+                }).focus();
+            // document.execCommand('selectAll', false, null);
+        }
+    });
+
+    $('#btnDeleteNodeType').click(function() {
+        if (selectedNodeTypeElem != null) {
+            selectedNodeTypeElem.remove();
+            selectedNodeTypeElem = null;
+            $('#btnEditNodeTypeName').attr('disabled', true);
+            $('#btnDeleteNodeType').attr('disabled', true);
+        }
+    });
+
+    $('#manageNodeTypeColorList > .list-group-item').click(function() {
+        var color = $(this).data('color');
+        $('#manageNodeTypeColorList > .list-group-item').each(function() {
+            $(this).attr('class', 'list-group-item');
+        })
+        $(this).addClass('active').addClass('type-color-bg')
+            .addClass('type-color-text').addClass('type-color-'+color);
+    });
 }
 
 function openAlertModal(msg, title) {

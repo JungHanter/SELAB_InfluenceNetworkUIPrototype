@@ -992,6 +992,9 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     var nodes = [{title: "Node 0", id: 0, x: xLoc, y: yLoc, type: 'A'},
                  {title: "Node 1", id: 1, x: xLoc, y: yLoc + 300, type: 'B'},
                  {title: "Node 2", id: 2, x: xLoc+200, y: yLoc + 150, type: null}];
+        var nodes = [{title: "Node 0", id: 0, x: xLoc, y: yLoc, type: null},
+                 {title: "Node 1", id: 1, x: xLoc, y: yLoc + 300, type: null},
+                 {title: "Node 2", id: 2, x: xLoc+200, y: yLoc + 150, type: null}];
     var edges = [{source: nodes[2], target: nodes[0], name: 1},
                  {source: nodes[0], target: nodes[2], name: 0.12},
                  {source: nodes[1], target: nodes[2], name: 0.69},
@@ -1000,6 +1003,9 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         "A": "red",
         "B": "yellow",
         "C": "blue"
+        // 0: {name: "A", color: "red"},
+        // 1: {name: "B", color: "yellow"},
+        // 2: {name: "C", color: "blue"}
     };
 
     /** MAIN SVG **/
