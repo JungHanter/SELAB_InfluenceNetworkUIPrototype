@@ -1014,8 +1014,9 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     var svg = d3.select(global_settings.appendElSpec).append("svg")
                 .attr("width", winWidth - global_consts.graphSvgStartX)
                 .attr("height", winHeight - global_consts.graphSvgStartY);
-    networkGraph = new GraphCreator(svg, nodes, edges, types);
-    networkGraph.setIdCt(3);
+    // networkGraph = new GraphCreator(svg, nodes, edges, types);
+    // networkGraph.setIdCt(3);
+    networkGraph = new GraphCreator(svg, [], [], {});
     networkGraph.updateGraph();
 
 })(window.d3, window.saveAs, window.Blob);

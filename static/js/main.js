@@ -22,6 +22,11 @@ var nodeConfidences = {
     }
 }
 
+//remove defaults
+nodeTypes = {}
+nodeTypeCnt = 0;
+nodeConfidences = {}
+
 function updateNodeTypes() {
     $('#subMenuNodeTypeDropdown').empty();
     for (var tid in nodeTypes) {
