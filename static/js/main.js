@@ -183,24 +183,36 @@ function deleteNode() {
 }
 
 function createEdge() {
-    $('#newEdgeDlgInfluence').val('');
-    if (selectedNode == null) {
-        $('#newEdgeDlgSource').addClass('unselected').html("Select Source Node");
+    if (networkGraph.nodes.length < 2) {
+        openAlertModal("Edge can be created when there are more than two nodes.");
     } else {
-        $('#newEdgeDlgSource').removeClass('unselected').html(nodeDataToSubMenuHtml(selectedNode.nodeData));
+        $('#newEdgeDlgInfluence').val('');
+        if (selectedNode == null) {
+            $('#newEdgeDlgSource').addClass('unselected').html("Select Source Node");
+        } else {
+            $('#newEdgeDlgSource').removeClass('unselected').html(nodeDataToSubMenuHtml(selectedNode.nodeData));
+        }
+        $('#newEdgeDlgTarget').addClass('unselected').html("Select Target Node");
+        $('#newEdgeModal').modal();
     }
-    $('#newEdgeDlgTarget').addClass('unselected').html("Select Target Node");
-    $('#newEdgeModal').modal();
 }
 function createEdgeConfirm() {
     var sourceId = parseInt($('#newEdgeDlgSource .nodeName').data('nodeid')),
         targetId = parseInt($('#newEdgeDlgTarget .nodeName').data('nodeid')),
         influence = parseFloat($('#newEdgeDlgInfluence').val());
+
     var sourceNode = networkGraph.getNodeById(sourceId),
         targetNode = networkGraph.getNodeById(targetId);
 
-    if (sourceId == targetId) {
-        openAlertModal("The nodes of path can not be same!");
+
+    if (isNaN(sourceId) || isNaN(targetId)) {
+        openAlertModal("The nodes of edge must be selected!");
+        return;
+    } else if (sourceId == targetId) {
+        openAlertModal("The nodes of edge can not be same!");
+        return;
+    } else if (isNaN(influence) || !isFinite(influence)) {
+        openAlertModal("The influence value is must be set!");
         return;
     } else if (validEdge(sourceNode, targetNode)) {
         networkGraph.createEdge(sourceNode, targetNode, influence);
@@ -287,16 +299,18 @@ $(document).ready(function() {
     setUnselected();
     updateNodeTypes();
 
-    networkGraph.setSelectedCallbacks(
+    networkGraph.setCallbacks(
         function (d3Node, nodeData) {       // onNodeSelected
             // console.log(nodeData);
             setSelectedNode(d3Node, nodeData);
-        }, function (d3PathG, edgeData) {    // onEdgeSelected
+        }, function (d3PathG, edgeData) {   // onEdgeSelected
             // console.log(edgeData);
             setSelectedEdge(d3PathG, edgeData);
-        }, function () {        // onUnselected
+        }, function () {                    // onUnselected
             // console.log("unselected");
             setUnselected();
+        }, function(nodeData) {             // onNodeCreated
+            updateNodeDropdown();
         }
     );
 

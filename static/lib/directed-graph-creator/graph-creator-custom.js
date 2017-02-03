@@ -701,70 +701,6 @@ document.onload = (function(d3, saveAs, Blob, undefined){
             thisGraph.insertEdgeName(d3.select(this), d);
         });
 
-        thisGraph.paths.exit().remove();
-
-        // // add new paths
-        // var paths = thisGraph.paths;
-        // paths.enter()
-        //     .append("path")
-        //     .style('marker-end','url(#end-arrow)')
-        //     .classed("link", true)
-        //     .attr("d", function(d){
-        //         return "M" + d.source.x + "," + d.source.y + "L" + d.target.x + "," + d.target.y;
-        //     })
-        //     .on("mousedown", function(d){
-        //         thisGraph.pathMouseDown.call(thisGraph, d3.select(this), d);
-        //         }
-        //     )
-        //     .on("mouseup", function(d){
-        //         state.mouseDownLink = null;
-        //     });
-
-        // update existing paths
-        // paths.style('marker-end', 'url(#end-arrow)')
-        //     .classed(consts.selectedClass, function(d){
-        //         return d === state.selectedEdge;
-        //     })
-        //     .attr("d", function(d){
-        //         var filtRes = paths.filter(function(d2) {
-        //             if (d.source === d2.target && d.target === d2.source) {
-        //                 return true;
-        //             } else {
-        //                 return false;
-        //             }
-        //         });
-        //         // console.log("(update)" + d.source.id + " -> " + d.target.id);
-        //         // console.log(filtRes);
-        //         if(filtRes[0].length == 1) {    //bi-direct
-        //             var dx = Math.abs(d.source.x - d.target.x);
-        //             var dy = Math.abs(d.source.y - d.target.y);
-        //             if (dx >= dy) {
-        //                 if (d.source.x <= d.target.x) {
-        //                     return "M" + d.source.x + "," + (d.source.y - 10) + "L" + d.target.x + "," + (d.target.y - 10);
-        //                 } else {
-        //                     return "M" + d.source.x + "," + (d.source.y + 10) + "L" + d.target.x + "," + (d.target.y + 10);
-        //                 }
-        //             } else {
-        //                 if (d.source.y <= d.target.y) {
-        //                     return "M" + (d.source.x - 10) + "," + d.source.y + "L" + (d.target.x - 10) + "," + d.target.y;
-        //                 } else {
-        //                     return "M" + (d.source.x + 10) + "," + d.source.y + "L" + (d.target.x + 10) + "," + d.target.y;
-        //                 }
-        //             }
-        //         } else {    //single-direct
-        //             return "M" + d.source.x + "," + d.source.y + "L" + d.target.x + "," + d.target.y;
-        //         }
-        //     });
-
-        // pathGroup.each(function(d){
-        //     thisGraph.insertEdgeName(d3.select(this), d.name);
-        // });
-
-        // remove old links
-        // paths.exit().remove();
-        // thisGraph.paths.exit().remove();
-
-
         // update existing nodes
         thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, function(d){ return d.id;});
         thisGraph.circles.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";});
@@ -901,14 +837,6 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         });
         thisGraph.replaceSelectNode(d3Node, newNodeData);
         thisGraph.onNodeSelected(d3Node, newNodeData);
-
-        // make title of text immediately editable
-        // var d3txt = thisGraph.changeTextOfNode(thisGraph.circles.filter(function(dval){
-        //     return dval.id === d.id;
-        // }), d),
-        //     txtNode = d3txt.node();
-        // thisGraph.selectElementContents(txtNode);
-        // txtNode.focus();
     }
 
     GraphCreator.prototype.createEdge = function(sourceNode, targetNode, name, editable=false) {
