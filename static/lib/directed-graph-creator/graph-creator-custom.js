@@ -27,6 +27,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         thisGraph.onNodeSelected = function(d3Node, nodeData){};
         thisGraph.onEdgeSelected = function(d3PathG, edgeData){};
         thisGraph.onUnselected = function(){};
+        thisGraph.onNodeCreated = function(nodeData){};
 
         thisGraph.state = {
             selectedNode: null,
@@ -516,22 +517,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         if (mouseDownNode !== d){
             // we're in a different node: create new edge for mousedown edge and add to graph
             // TODO here is to create edge!!!
-            var newEdge = {source: mouseDownNode, target: d, name: 0.5, bilateral: false};
-            var filtRes = thisGraph.paths.filter(function(d){
-                return d.source === newEdge.source && d.target === newEdge.target;
-            });
-            if (!filtRes[0].length){
-                thisGraph.edges.push(newEdge);
-                thisGraph.updateGraph();
-
-                // make name of text immediately editable
-                var d3txt = thisGraph.changeTextOfEdge(thisGraph.paths.filter(function(dval) {
-                    return dval.source === newEdge.source && dval.target === newEdge.target;
-                }), newEdge),
-                    txtEdge = d3txt.node();
-                thisGraph.selectElementContents(txtEdge);
-                txtEdge.focus();
-            }
+            this.createEdge(mouseDownNode, d, 0.5, true);
         } else{
             // we're in the same node
             if (state.justDragged) {
@@ -580,15 +566,15 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         } else if (state.graphMouseDown && d3.event.shiftKey){
             // clicked not dragged from svg
             var xycoords = d3.mouse(thisGraph.svgG.node()),
-                d = {id: thisGraph.idct++, title: global_consts.defaultTitle,
-                    type: null,
-                    x: xycoords[0], y: xycoords[1]};
-            thisGraph.nodes.push(d);
+                newNodeData = {id: thisGraph.idct++, title: global_consts.defaultTitle,
+                               type: null, x: xycoords[0], y: xycoords[1]};
+            thisGraph.nodes.push(newNodeData);
             thisGraph.updateGraph();
+            thisGraph.onNodeCreated(newNodeData);
             // make title of text immediately editable
             var d3txt = thisGraph.changeTextOfNode(thisGraph.circles.filter(function(dval){
-                return dval.id === d.id;
-            }), d),
+                return dval.id === newNodeData.id;
+            }), newNodeData),
                 txtNode = d3txt.node();
             thisGraph.selectElementContents(txtNode);
             txtNode.focus();
@@ -866,10 +852,12 @@ document.onload = (function(d3, saveAs, Blob, undefined){
             .attr("height", winHeight - global_consts.graphSvgStartY);
     };
 
-    GraphCreator.prototype.setSelectedCallbacks = function(onNodeSelected, onEdgeSelected, onUnselected) {
+    GraphCreator.prototype.setCallbacks
+            = function(onNodeSelected, onEdgeSelected, onUnselected, onNodeCreated) {
         this.onNodeSelected = onNodeSelected;
         this.onEdgeSelected = onEdgeSelected;
         this.onUnselected = onUnselected;
+        this.onNodeCreated = onNodeCreated;
     };
 
     GraphCreator.prototype.changeNodeTitle = function(d3node, title) {
@@ -923,7 +911,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         // txtNode.focus();
     }
 
-    GraphCreator.prototype.createEdge = function(sourceNode, targetNode, name) {
+    GraphCreator.prototype.createEdge = function(sourceNode, targetNode, name, editable=false) {
         var thisGraph = this;
         var newEdge = {source: sourceNode, target: targetNode, name: name, bilateral: false};
         var filtRes = thisGraph.paths.filter(function(d){
@@ -932,12 +920,22 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         if (!filtRes[0].length) {
             thisGraph.edges.push(newEdge);
             thisGraph.updateGraph();
+
+            if (editable) {
+                // make name of text immediately editable
+                var d3txt = thisGraph.changeTextOfEdge(thisGraph.paths.filter(function(dval) {
+                    return dval.source === newEdge.source && dval.target === newEdge.target;
+                }), newEdge),
+                    txtEdge = d3txt.node();
+                thisGraph.selectElementContents(txtEdge);
+                txtEdge.focus();
+            }
         }
     }
 
     GraphCreator.prototype.getNodeById = function(id) {
         for (var i=0; i<this.nodes.length; i++) {
-            if (nodes[i].id == id) return nodes[i];
+            if (this.nodes[i].id == id) return this.nodes[i];
         }
         return null;
     }
