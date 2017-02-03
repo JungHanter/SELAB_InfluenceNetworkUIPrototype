@@ -701,6 +701,9 @@ document.onload = (function(d3, saveAs, Blob, undefined){
             thisGraph.insertEdgeName(d3.select(this), d);
         });
 
+        thisGraph.paths.exit().remove();
+
+
         // update existing nodes
         thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, function(d){ return d.id;});
         thisGraph.circles.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";});
