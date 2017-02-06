@@ -61,6 +61,21 @@ function updateNodeList(event, updatedData) {  //if updatedData is null, all dat
         var selItem = $(this);
         $('#subMenuEdgeTarget').removeClass('unselected').html(selItem.html());
     });
+    if (selectedEdge != null) {
+        if (selectedEdge.edgeData.source == updatedData) {
+            $('#subMenuEdgeSourceDropdown > li > a').each(function (idx, elem) {
+                if ($(this).find('.nodeName').data('nodeid') == updatedData.id) {
+                    $('#subMenuEdgeSource').html($(this).html());
+                }
+            });
+        } else if (selectedEdge.edgeData.target == updatedData) {
+            $('#subMenuEdgeTargetDropdown > li > a').each(function (idx, elem) {
+                if ($(this).find('.nodeName').data('nodeid') == updatedData.id) {
+                    $('#subMenuEdgeTarget').html($(this).html());
+                }
+            });
+        }
+    }
 
     // For new edge dialog
     $('.newEdgeDlgNodeDropdown').empty();
@@ -100,15 +115,33 @@ function updateNodeList(event, updatedData) {  //if updatedData is null, all dat
                 if (updatedData.id == $(this).data('nodeid')) {
                     $(this).find('.nodeName').text(updatedData.title);
                 }
-            })
-        } else if (event == 'deleted') {
-            var deletedElem = null;
-            $('#sideMenuNodeList > li > a').each(function(idx, elem) {
+            });
+
+            $('#sideMenuEdgeList > li > a .edge-source, ' +
+                '#sideMenuEdgeList > li > a .edge-target').each(function(idx, elem) {
                 if (updatedData.id == $(this).data('nodeid')) {
-                    deletedElem = $(this);
+                    $(this).text(updatedData.title);
                 }
             });
-            deletedElem.remove();
+        } else if (event == 'deleted') {
+            var deletedNodeElem = null;
+            $('#sideMenuNodeList > li > a').each(function(idx, elem) {
+                if (updatedData.id == $(this).data('nodeid')) {
+                    deletedNodeElem = $(this);
+                }
+            });
+            if (deletedNodeElem != null) deletedNodeElem.remove();
+
+            var deletedEdgeElems = [];
+            $('#sideMenuEdgeList > li > a').each(function(idx, elem) {
+                if (updatedData.id == $(this).find('.edge-source').data('nodeid') ||
+                        updatedData.id == $(this).find('.edge-target').data('nodeid')) {
+                    deletedEdgeElems.push(this);
+                }
+            });
+            for (var i=deletedEdgeElems.length-1; i>=0; i--) {
+                deletedEdgeElems[i].remove();
+            }
         }
     }
     if (newListItems != null) {
@@ -127,7 +160,64 @@ function updateNodeList(event, updatedData) {  //if updatedData is null, all dat
 }
 
 function updateEdgeList(event, updatedData) {
+    if (event == undefined || updatedData == undefined)
+        event = updatedData = null;
 
+    var newListItems = null;
+    if (updatedData == null) {
+        $('#sideMenuEdgeList').empty();
+        for (var i = 0; i < networkGraph.edges.length; i++) {
+            edgeData = networkGraph.edges[i];
+            var edgeInfoHtml = "<li><a><span class='edge-source' data-nodeid='"
+                + edgeData.source.id + "'>" + edgeData.source.title + "</span>"
+                + "<span class='edge-pointer'>-></span>"
+                + "<span class='edge-target' data-nodeid='" + edgeData.target.id
+                + "'>" + edgeData.target.title + "</span></a></li>";
+            $('#sideMenuEdgeList').append(edgeInfoHtml);
+        }
+        newListItems = $('#sideMenuEdgeList > li > a');
+    } else {
+        if (event == 'created') {
+            var edgeInfoHtml = "<li><a><span class='edge-source' data-nodeid='"
+                + updatedData.source.id + "'>" + updatedData.source.title + "</span>"
+                + "<span class='edge-pointer'>-></span>"
+                + "<span class='edge-target' data-nodeid='" + updatedData.target.id
+                + "'>" + updatedData.target.title + "</span></a></li>";
+            $('#sideMenuEdgeList').append(edgeInfoHtml);
+            newListItems = $('#sideMenuEdgeList > li > a:last');
+        } else if (event == 'updated') {
+            $('#sideMenuEdgeList > li > a').each(function(idx, elem) {
+                if (updatedData.source.id == $(this).find('.edge-source').data('nodeid') &&
+                        updatedData.target.id == $(this).find('.edge-target').data('nodeid')) {
+                    $(this).find('.edge-source').text(updatedData.source.title);
+                    $(this).find('.edge-target').text(updatedData.target.title);
+                }
+            });
+        } else if (event == 'deleted') {
+            var deletedElem = null;
+            $('#sideMenuEdgeList > li > a').each(function(idx, elem) {
+                if (updatedData.source.id == $(this).find('.edge-source').data('nodeid') &&
+                        updatedData.target.id == $(this).find('.edge-target').data('nodeid')) {
+                    deletedElem = $(this);
+                }
+            });
+            if (deletedElem != null) deletedElem.remove();
+        }
+    }
+    if (newListItems != null) {
+        newListItems.off('click').unbind('click').click(function() {
+            var selItem = $(this);
+            if (selItem.hasClass('active')) {
+                selItem.removeClass('active');
+                networkGraph.unselect();
+            } else {
+                $('#sideMenuNodeList > li > a, #sideMenuEdgeList > li > a').removeClass('active');
+                selItem.addClass('active');
+                networkGraph.selectEdge(selItem.find('.edge-source').data('nodeid'),
+                    selItem.find('.edge-target').data('nodeid'));
+            }
+        });
+    }
 }
 
 var selectedNode = null;
@@ -152,7 +242,7 @@ function setSelectedNode(d3Node, nodeData) {
     $('#sideMenuEdgeList > li > a').removeClass('active');
     $('#sideMenuNodeList > li > a').each(function(idx, elem) {
         if (nodeData.id == $(this).data('nodeid')) {
-            $(this).addClass('active');
+            $(this).addClass('active').focus();
         }
     });
 
@@ -177,6 +267,15 @@ function setSelectedEdge(d3PathG, edgeData) {
     $('#subMenuEdgeSource').removeClass('unselected').html(nodeDataToSubMenuHtml(edgeData.source));
     $('#subMenuEdgeTarget').removeClass('unselected').html(nodeDataToSubMenuHtml(edgeData.target));
 
+    $('#sideMenuNodeList > li > a').removeClass('active');
+    $('#sideMenuEdgeList > li > a').removeClass('active');
+    $('#sideMenuEdgeList > li > a').each(function(idx, elem) {
+        if (edgeData.source.id == $(this).find('.edge-source').data('nodeid') &&
+                edgeData.target.id == $(this).find('.edge-target').data('nodeid')) {
+            $(this).addClass('active').focus();;
+        }
+    });
+
     selectedNode = null;
     selectedEdge = {
         'd3PathG': d3PathG,
@@ -197,6 +296,9 @@ function setUnselected() {
     $('#subMenuNodeType').addClass('unselected').text('');
     $('#subMenuEdgeInfluence').val('');
     $('.subMenuEdgeNode').addClass('unselected').text('');
+
+    $('#sideMenuNodeList > li > a').removeClass('active');
+    $('#sideMenuEdgeList > li > a').removeClass('active');
 
     selectedNode = null;
     selectedEdge = null;
@@ -282,7 +384,8 @@ function createEdgeConfirm() {
         openAlertModal("The influence value is must be set!");
         return;
     } else if (validEdge(sourceNode, targetNode)) {
-        networkGraph.createEdge(sourceNode, targetNode, influence);
+        var newEdge = networkGraph.createEdge(sourceNode, targetNode, influence);
+        updateEdgeList('created', newEdge);
         $('#newEdgeModal').modal('hide');
     } else {
         openAlertModal("The path is already existed!");
@@ -318,11 +421,16 @@ function editEdge() {
 
         networkGraph.changeEdgeName(selectedEdge.d3PathG, selectedEdge.edgeData);
         networkGraph.updateGraph();
+        updateEdgeList('updated', selectedEdge.edgeData);
     }
 }
 function deleteEdge() {
-    networkGraph.deleteEdge();
-    setUnselected();
+    if (selectedEdge != null) {
+        var deletedEdge = selectedEdge.edgeData;
+        networkGraph.deleteEdge();
+        setUnselected();
+        updateEdgeList('deleted', deletedEdge);
+    }
 }
 function validEdge(sourceNode, targedNode) {
     for (var i=0; i<networkGraph.edges.length; i++) {
@@ -365,6 +473,7 @@ function printFile() {
 $(document).ready(function() {
     setUnselected();
     updateNodeTypes();
+    updateEdgeList();
 
     networkGraph.setCallbacks(
         function (d3Node, nodeData) {       // onNodeSelected
@@ -375,8 +484,10 @@ $(document).ready(function() {
         }, function () {                    // onUnselected
             // console.log("unselected");
             setUnselected();
-        }, function(event, nodeData) {             // onNodeChanged
+        }, function(event, nodeData) {      // onNodeChanged
             updateNodeList(event, nodeData);
+        }, function(event, edgeData) {      // onEdgeChanged
+            updateEdgeList(event, edgeData);
         }
     );
 
