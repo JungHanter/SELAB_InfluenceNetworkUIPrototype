@@ -453,7 +453,10 @@ function newFile() {
     networkGraph.deleteGraph();
     setUnselected();
 }
-function loadFile() {
+function openFile() {
+
+}
+function closeFile() {
 
 }
 function saveFile() {
@@ -467,6 +470,9 @@ function deleteFile() {
     setUnselected();
 }
 function printFile() {
+
+}
+function showAbout() {
 
 }
 
@@ -505,11 +511,12 @@ $(document).ready(function() {
     $('.menuManageConfidence').click(manageConfidence);
 
     $('.menuNew').click(newFile);
-    $('.menuLoad').click(loadFile);
+    $('.menuOpen').click(openFile);
+    $('.menuClose').click(closeFile);
     $('.menuSave').click(saveFile);
     $('.menuSaveAs').click(saveAsFile);
-    $('.menuDelete').click(deleteFile);
     $('.menuPrint').click(printFile);
+    $('.menuAbout').click(showAbout);
 });
 
 var selectedNodeTypeElem = null;
