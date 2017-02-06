@@ -146,12 +146,57 @@
 
         <div class="content">
             <nav class="side-menu">
-                <button type="button" class="btn btn-dark side-menu-button menuNewNode">NN<span class="tooltip-text">New Node</span></button>
-{#                <button type="button" class="btn btn-dark side-menu-button">EN<span class="tooltip-text">Edit Node</span></button>#}
-                <button type="button" class="btn btn-dark side-menu-button menuDeleteNode">DN<span class="tooltip-text">Delete Node</span></button>
-                <button type="button" class="btn btn-dark side-menu-button menuNewEdge">NE<span class="tooltip-text">New Edge</span></button>
-{#                <button type="button" class="btn btn-dark side-menu-button">EE<span class="tooltip-text">Edit Edge</span></button>#}
-                <button type="button" class="btn btn-dark side-menu-button menuDeleteEdge">DE<span class="tooltip-text">Delete Edge</span></button>
+                <div class="side-menu-container">
+                    <div class="side-menu-list side-menu-nodes">
+                        <div class="side-menu-list-header">
+                            <h5>Node List</h5>
+                            <div class="btn-group" role="group">
+                                <a class="btn btn-dark btn-xs menuDeleteNode" aria-label="Delete Node">
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                </a>
+                                <a class="btn btn-dark btn-xs menuNewNode" aria-label="Add Node">
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                </a>
+                            </div>
+                        </div>
+                        <ul id="sideMenuNodeList">
+                            <li><a><span>New Node 1</span></a></li>
+                            <li><a><span>New Node 2</span></a></li>
+                            <li><a><span>New Node 3</span></a></li>
+                            <li><a><span>New Node 4</span></a></li>
+                        </ul>
+                    </div>
+
+                    <div class="side-menu-list side-menu-edges">
+                        <div class="side-menu-list-header">
+                            <h5>Edge List</h5>
+                            <div class="btn-group" role="group">
+                                <a class="btn btn-dark btn-xs menuDeleteEdge" aria-label="Delete Edge">
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                </a>
+                                <a class="btn btn-dark btn-xs menuNewEdge" aria-label="Add Edge">
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                </a>
+                            </div>
+                        </div>
+                        <ul id="sideMenuEdgeList">
+                            <li><a><span class="edge-source">Node A</span>
+                                <span class="edge-pointer">-></span>
+                                <span class="edge-target">Node B</span></a></li>
+                            <li><a><span class="edge-source">Node B</span>
+                                <span class="edge-pointer">-></span>
+                                <span class="edge-target">Node A</span></a></li>
+                            <li><a><span class="edge-source">Node A</span>
+                                <span class="edge-pointer">-></span>
+                                <span class="edge-target">Node C</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+
+{#                <button type="button" class="btn btn-dark side-menu-button menuNewNode">NN<span class="tooltip-text">New Node</span></button>#}
+{#                <button type="button" class="btn btn-dark side-menu-button menuDeleteNode">DN<span class="tooltip-text">Delete Node</span></button>#}
+{#                <button type="button" class="btn btn-dark side-menu-button menuNewEdge">NE<span class="tooltip-text">New Edge</span></button>#}
+{#                <button type="button" class="btn btn-dark side-menu-button menuDeleteEdge">DE<span class="tooltip-text">Delete Edge</span></button>#}
             </nav>
             <div class="graph-area">
                 <div id="graph"></div>

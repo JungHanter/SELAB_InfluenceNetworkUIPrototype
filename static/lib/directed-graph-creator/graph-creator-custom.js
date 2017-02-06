@@ -1,7 +1,7 @@
 var global_consts = {
     defaultTitle: "New Node",
     defaultEdgeValue: 0.5,
-    graphSvgStartX: 54,
+    graphSvgStartX: 240,
     graphSvgStartY: 76
 };
 var global_settings = {
@@ -27,7 +27,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         thisGraph.onNodeSelected = function(d3Node, nodeData){};
         thisGraph.onEdgeSelected = function(d3PathG, edgeData){};
         thisGraph.onUnselected = function(){};
-        thisGraph.onNodeCreated = function(nodeData){};
+        thisGraph.onNodeChanged = function(event, nodeData){};
 
         thisGraph.state = {
             selectedNode: null,
@@ -401,6 +401,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
                 if (thisGraph.state.selectedNode == d) {
                     thisGraph.onNodeSelected(d3node, d);
                 }
+                thisGraph.onNodeChanged('updated', d);
             });
         return d3txt;
     };
@@ -570,7 +571,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
                                type: null, x: xycoords[0], y: xycoords[1]};
             thisGraph.nodes.push(newNodeData);
             thisGraph.updateGraph();
-            thisGraph.onNodeCreated(newNodeData);
+            thisGraph.onNodeChanged('created', newNodeData);
             // make title of text immediately editable
             var d3txt = thisGraph.changeTextOfNode(thisGraph.circles.filter(function(dval){
                 return dval.id === newNodeData.id;
@@ -606,10 +607,12 @@ document.onload = (function(d3, saveAs, Blob, undefined){
             if (focusedTag == 'BODY' || focusedTag == 'SVG' || focusedTag == 'G') {
                 d3.event.preventDefault();
                 if (selectedNode){
+                    var deletedNode = state.selectedNode;
                     thisGraph.nodes.splice(thisGraph.nodes.indexOf(selectedNode), 1);
                     thisGraph.spliceLinksForNode(selectedNode);
                     state.selectedNode = null;
                     thisGraph.updateGraph();
+                    thisGraph.onNodeChanged('deleted', deletedNode);
                 } else if (selectedEdge){
                     thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
                     state.selectedEdge = null;
@@ -792,11 +795,11 @@ document.onload = (function(d3, saveAs, Blob, undefined){
     };
 
     GraphCreator.prototype.setCallbacks
-            = function(onNodeSelected, onEdgeSelected, onUnselected, onNodeCreated) {
+            = function(onNodeSelected, onEdgeSelected, onUnselected, onNodeChanged) {
         this.onNodeSelected = onNodeSelected;
         this.onEdgeSelected = onEdgeSelected;
         this.onUnselected = onUnselected;
-        this.onNodeCreated = onNodeCreated;
+        this.onNodeChanged = onNodeChanged;
     };
 
     GraphCreator.prototype.changeNodeTitle = function(d3node, title) {
@@ -839,7 +842,8 @@ document.onload = (function(d3, saveAs, Blob, undefined){
             return cd.id === newNodeData.id;
         });
         thisGraph.replaceSelectNode(d3Node, newNodeData);
-        thisGraph.onNodeSelected(d3Node, newNodeData);
+
+        return newNodeData;
     }
 
     GraphCreator.prototype.createEdge = function(sourceNode, targetNode, name, editable=false) {
@@ -861,6 +865,41 @@ document.onload = (function(d3, saveAs, Blob, undefined){
                 thisGraph.selectElementContents(txtEdge);
                 txtEdge.focus();
             }
+        }
+    }
+
+    GraphCreator.prototype.selectNode = function(id) {
+        var thisGraph = this;
+        var nodeData = thisGraph.getNodeById(id);
+        if (nodeData != null) {
+            var d3Node = thisGraph.circles.filter(function(cd) {
+                return cd.id === nodeData.id;
+            });
+            if (d3Node == null || d3Node.length < 0) return false;
+
+            if (thisGraph.state.selectedEdge){
+                thisGraph.removeSelectFromEdge();
+            }
+            thisGraph.replaceSelectNode(d3Node, nodeData);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    GraphCreator.prototype.selectEdge = function() {
+
+    }
+
+    GraphCreator.prototype.unselect = function() {
+        if (this.state.selectedNode) {
+            this.removeSelectFromNode();
+            return true;
+        } else if (this.state.selectedEdge) {
+            this.removeSelectFromEdge();
+            return true;
+        } else {
+            return false;
         }
     }
 

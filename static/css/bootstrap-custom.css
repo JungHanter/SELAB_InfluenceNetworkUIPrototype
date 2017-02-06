@@ -52,7 +52,11 @@
     border-color: #212121;
     color:white;
 }
-
 .btn.btn-dark:hover, .btn.btn-dark:focus {
     background-color: #616161;
+}
+.btn.btn-dark:disabled, .btn.btn-dark.disabled {
+    background-color: #616161;
+    color: #e0e0e0;
+    cursor: not-allowed;
 }

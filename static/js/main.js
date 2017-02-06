@@ -39,10 +39,14 @@ function updateNodeTypes() {
     });
 
     networkGraph.setTypes(nodeTypes);
-    updateNodeDropdown();
+    updateNodeList();
     networkGraph.updateGraph();
 }
-function updateNodeDropdown() {
+function updateNodeList(event, updatedData) {  //if updatedData is null, all data update
+    if (event == undefined || updatedData == undefined)
+        event = updatedData = null;
+
+    // For submenu
     $('.subMenuEdgeNodeDropdown').empty();
     for (var i=0; i<networkGraph.nodes.length; i++) {
         nodeData = networkGraph.nodes[i];
@@ -58,7 +62,7 @@ function updateNodeDropdown() {
         $('#subMenuEdgeTarget').removeClass('unselected').html(selItem.html());
     });
 
-
+    // For new edge dialog
     $('.newEdgeDlgNodeDropdown').empty();
     for (var i=0; i<networkGraph.nodes.length; i++) {
         nodeData = networkGraph.nodes[i];
@@ -73,6 +77,57 @@ function updateNodeDropdown() {
         var selItem = $(this);
         $('#newEdgeDlgTarget').removeClass('unselected').html(selItem.html());
     });
+
+    // For side menu
+    var newListItems = null;
+    if (updatedData == null) {
+        $('#sideMenuNodeList').empty();
+        for (var i=0; i<networkGraph.nodes.length; i++) {
+            nodeData = networkGraph.nodes[i];
+            var nodeInfoHtml = "<li><a data-nodeid='" + nodeData.id
+                + "'><span class='nodeName'>" + nodeData.title + "</span></a></li>";
+            $('#sideMenuNodeList').append(nodeInfoHtml);
+        }
+        newListItems = $('#sideMenuNodeList > li > a');
+    } else {
+        if (event == 'created') {
+            var nodeInfoHtml = "<li><a data-nodeid='" + updatedData.id
+                + "'><span class='nodeName'>" + updatedData.title + "</span></a></li>";
+            $('#sideMenuNodeList').append(nodeInfoHtml);
+            newListItems = $('#sideMenuNodeList > li > a:last');
+        } else if (event == 'updated') {
+            $('#sideMenuNodeList > li > a').each(function(idx, elem) {
+                if (updatedData.id == $(this).data('nodeid')) {
+                    $(this).find('.nodeName').text(updatedData.title);
+                }
+            })
+        } else if (event == 'deleted') {
+            var deletedElem = null;
+            $('#sideMenuNodeList > li > a').each(function(idx, elem) {
+                if (updatedData.id == $(this).data('nodeid')) {
+                    deletedElem = $(this);
+                }
+            });
+            deletedElem.remove();
+        }
+    }
+    if (newListItems != null) {
+        newListItems.off('click').unbind('click').click(function() {
+            var selItem = $(this);
+            if (selItem.hasClass('active')) {
+                selItem.removeClass('active');
+                networkGraph.unselect();
+            } else {
+                $('#sideMenuNodeList > li > a, #sideMenuEdgeList > li > a').removeClass('active');
+                selItem.addClass('active');
+                networkGraph.selectNode(selItem.data('nodeid'));
+            }
+        });
+    }
+}
+
+function updateEdgeList(event, updatedData) {
+
 }
 
 var selectedNode = null;
@@ -92,6 +147,15 @@ function setSelectedNode(d3Node, nodeData) {
     } else {
         $('#subMenuNodeType').addClass('unselected').text("Select Type");
     }
+
+    $('#sideMenuNodeList > li > a').removeClass('active');
+    $('#sideMenuEdgeList > li > a').removeClass('active');
+    $('#sideMenuNodeList > li > a').each(function(idx, elem) {
+        if (nodeData.id == $(this).data('nodeid')) {
+            $(this).addClass('active');
+        }
+    });
+
     selectedEdge = null;
     selectedNode = {
         'd3Node': d3Node,
@@ -159,8 +223,8 @@ function nodeDataToSubMenuHtml(nodeData) {
 }
 
 function createNode() {
-    networkGraph.createNode();
-    updateNodeDropdown();
+    var createdNode = networkGraph.createNode();
+    updateNodeList('created', createdNode);
 }
 function editNode() {
     if (selectedNode != null) {
@@ -173,13 +237,16 @@ function editNode() {
             networkGraph.updateNodeType(selectedNode.d3Node);
         }
         networkGraph.updateGraph();
-        updateNodeDropdown();
+        updateNodeList('updated', selectedNode.nodeData);
     }
 }
 function deleteNode() {
-    networkGraph.deleteNode();
-    setUnselected();
-    updateNodeDropdown();
+    if (selectedNode != null) {
+        var deletedNode = selectedNode.nodeData;
+        networkGraph.deleteNode();
+        setUnselected();
+        updateNodeList('deleted', deletedNode);
+    }
 }
 
 function createEdge() {
@@ -301,7 +368,6 @@ $(document).ready(function() {
 
     networkGraph.setCallbacks(
         function (d3Node, nodeData) {       // onNodeSelected
-            // console.log(nodeData);
             setSelectedNode(d3Node, nodeData);
         }, function (d3PathG, edgeData) {   // onEdgeSelected
             // console.log(edgeData);
@@ -309,8 +375,8 @@ $(document).ready(function() {
         }, function () {                    // onUnselected
             // console.log("unselected");
             setUnselected();
-        }, function(nodeData) {             // onNodeCreated
-            updateNodeDropdown();
+        }, function(event, nodeData) {             // onNodeChanged
+            updateNodeList(event, nodeData);
         }
     );
 

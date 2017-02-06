@@ -67,13 +67,90 @@ body {
 }
 
 .side-menu {
-    width: 54px;
+    width: 240px;
     min-height: 1600px;
     height: 100%;
     overflow: hidden;
     display: inline-block;
     background-color: #424242;
     border-right: solid 1px #212121;
+}
+.side-menu-container {
+    padding: 10px;
+}
+.side-menu-container .side-menu-list {
+    background-color: #616161;
+    border: solid 1px #212121;
+    border-radius: 4px;
+    color: white;
+    margin-bottom: 10px;
+}
+.side-menu-list .side-menu-list-header {
+    padding: 0 10px;
+    border-bottom: solid 1px #212121;
+}
+.side-menu-list .side-menu-list-header h5 {
+    display: inline-block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+.side-menu-list .side-menu-list-header .btn-group {
+    display: inline-block;
+    float: right;
+    padding-top: 6px;
+}
+.side-menu-list ul {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    min-height: 240px;
+    max-height: 320px;
+    padding: 5px 0;
+    margin-bottom: 0;
+    list-style-type: none;
+}
+.side-menu-list ul li {
+}
+.side-menu-list ul li > a {
+    display: block;
+    padding: 0px 10px;
+    color: white;
+    width: 100%;
+    height: 20px;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    text-overflow-mode: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    user-drag: none;
+}
+.side-menu-list ul li > a:hover,
+.side-menu-list ul li > a:focus {
+    background-color: #757575;
+    text-decoration: none;
+}
+.side-menu-list ul li > a.active,
+.side-menu-list ul li > a.active:hover,
+.side-menu-list ul li > a.active:focus {
+    background-color: #9e9e9e;
+    text-decoration: none;
+}
+.side-menu-list.side-menu-edges ul li > a .edge-source,
+.side-menu-list.side-menu-edges ul li > a .edge-target {
+    display: inline-block;
+    width: 45%;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    text-overflow-mode: ellipsis;
+    white-space: nowrap;
+}
+.side-menu-list.side-menu-edges ul li > a .edge-pointer {
+    display: inline-block;
+    width: 10%;
+    overflow: hidden;
+    text-align: center;
 }
 
 .side-menu-button {
@@ -133,7 +210,7 @@ body {
 .graph-area {
     /*margin-top: 74px;*/
     /*margin-left: 55px;*/
-    width: calc(100% - 55px);
+    width: calc(100% - 240px);
     height: 100%;
     display: inline-block;
     float: right;
