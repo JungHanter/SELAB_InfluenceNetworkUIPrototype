@@ -22,6 +22,7 @@
 .navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-toggle {
     /*color:red;*/
 }
+
 .navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-toggle.disabled,
 .navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-toggle:disabled,
 .navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-toggle.disabled:hover,
@@ -34,6 +35,7 @@
     color: #9e9e9e;
     cursor: not-allowed;
 }
+
 .navbar.navbar-dark .nav.navbar-nav .dropdown .dropdown-menu {
     background-color: #424242;
 }

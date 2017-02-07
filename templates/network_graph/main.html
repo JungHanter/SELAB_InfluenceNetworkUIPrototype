@@ -483,6 +483,123 @@
             </div>
         </div>
 
+        <div id="newGraphModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 id="" class="modal-title">New Graph</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <h5>Graph Name: </h5>
+                            <input type="text" id="newGraphName" class="form-control" placeholder="New Graph Name">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" id="btnNewGraph" class="btn btn-dark">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="openGraphModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 id="" class="modal-title">Open Graph</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <h5>Influence Graph List</h5>
+                            <div id="graphList" class="list-group">
+                                <a href="#" class="list-group-item active">Type 1</a>
+                                <a href="#" class="list-group-item">Type 2</a>
+                            </div>
+                            <span class="unfocusor" style="display: none;">&nbsp;</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" id="btnOpenGraph" class="btn btn-dark" >Open</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="closeGraphConfirmModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 id="" class="modal-title">Alert</h4>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="saveAsGraphModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 id="" class="modal-title">Save As</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <h5>Graph Name: </h5>
+                            <input type="text" id="saveAsGraphName" class="form-control" placeholder="Graph Name">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" id="btnSaveAsGraph" class="btn btn-dark">Save As</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="findMaxInfluenePathModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 id="" class="modal-title">Alert</h4>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="confirmModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 id="confirmModalTitle" class="modal-title">Alert</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="confirmModalMsg">message</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button id="btnConfirmModal" type="button" class="btn btn-dark">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="alertModal" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

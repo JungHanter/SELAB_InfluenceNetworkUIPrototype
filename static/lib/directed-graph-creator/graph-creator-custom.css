@@ -54,66 +54,118 @@ g.conceptG circle{
 g.conceptG text{
     fill: black;
 }
-
 g.conceptG:hover circle{
-    fill: rgb(200, 238, 241) !important;
+    fill: rgb(200, 238, 241);
+    stroke-width: 3px;
 }
 g.conceptG:hover text{
-    fill: black !important;
+    /*fill: black;*/
+}
+g.conceptG.selected circle{
+    fill: rgb(250, 232, 255);
+    stroke-width: 6px;
+}
+g.conceptG.selected:hover circle{
+    stroke-width: 6px;
 }
 
 g.conceptG.type-color-red circle { fill: #f44336; }
 g.conceptG.type-color-red text { fill: white; }
+g.conceptG.type-color-red:hover circle { fill: #FF5252; }
+g.conceptG.type-color-red.selected circle { fill: #F44336; }
+g.conceptG.type-color-red.selected:hover circle { fill: #FF5252; }
 g.conceptG.type-color-pink circle { fill: #e91e63; }
 g.conceptG.type-color-pink text { fill: white; }
+g.conceptG.type-color-pink:hover circle { fill: #FF4081; }
+g.conceptG.type-color-pink.selected circle { fill: #e91e63; }
+g.conceptG.type-color-pink.selected:hover circle { fill: #FF4081; }
 g.conceptG.type-color-purple circle { fill: #9c27b0; }
 g.conceptG.type-color-purple text { fill: white; }
+g.conceptG.type-color-purple:hover circle { fill: #E040FB; }
+g.conceptG.type-color-purple.selected circle { fill: #9c27b0; }
+g.conceptG.type-color-purple.selected:hover circle { fill: #E040FB; }
 g.conceptG.type-color-deep-purple circle { fill: #673ab7; }
 g.conceptG.type-color-deep-purple text { fill: white; }
+g.conceptG.type-color-deep-purple:hover circle { fill: #7C4DFF; }
+g.conceptG.type-color-deep-purple.selected circle { fill: #673ab7; }
+g.conceptG.type-color-deep-purple.selected:hover circle { fill: #7C4DFF; }
 g.conceptG.type-color-indigo circle { fill: #3f51b5; }
 g.conceptG.type-color-indigo text { fill: white; }
+g.conceptG.type-color-indigo:hover circle { fill: #536DFE; }
+g.conceptG.type-color-indigo.selected circle { fill: #3f51b5; }
+g.conceptG.type-color-indigo.selected:hover circle { fill: #536DFE; }
 g.conceptG.type-color-blue circle { fill: #2196f3; }
 g.conceptG.type-color-blue text { fill: white; }
+g.conceptG.type-color-blue:hover circle { fill: #448AFF; }
+g.conceptG.type-color-blue.selected circle { fill: #2196f3; }
+g.conceptG.type-color-blue.selected:hover circle { fill: #448AFF; }
 g.conceptG.type-color-light-blue circle { fill: #03a9f4; }
 g.conceptG.type-color-light-blue text { fill: black; }
+g.conceptG.type-color-light-blue:hover circle { fill: #40C4FF; }
+g.conceptG.type-color-light-blue.selected circle { fill: #03a9f4; }
+g.conceptG.type-color-light-blue.selected:hover circle { fill: #40C4FF; }
 g.conceptG.type-color-cyan circle { fill: #00bcd4; }
 g.conceptG.type-color-cyan text { fill: black; }
+g.conceptG.type-color-cyan:hover circle { fill: #18FFFF; }
+g.conceptG.type-color-cyan.selected circle { fill: #00bcd4; }
+g.conceptG.type-color-cyan.selected:hover circle { fill: #18FFFF; }
 g.conceptG.type-color-teal circle { fill: #009688; }
 g.conceptG.type-color-teal text { fill: white; }
+g.conceptG.type-color-teal:hover circle { fill: #64FFDA; }
+g.conceptG.type-color-teal.selected circle { fill: #009688; }
+g.conceptG.type-color-teal.selected:hover circle { fill: #64FFDA; }
 g.conceptG.type-color-green circle { fill: #4caf50; }
 g.conceptG.type-color-green text { fill: black; }
+g.conceptG.type-color-green:hover circle { fill: #69F0AE; }
+g.conceptG.type-color-green.selected circle { fill: #4caf50; }
+g.conceptG.type-color-green.selected:hover circle { fill: #69F0AE; }
 g.conceptG.type-color-light-green circle { fill: #8bc34a; }
 g.conceptG.type-color-light-green text { fill: black; }
+g.conceptG.type-color-light-green:hover circle { fill: #B2FF59; }
+g.conceptG.type-color-light-green.selected circle { fill: #8bc34a; }
+g.conceptG.type-color-light-green.selected:hover circle { fill: #B2FF59; }
 g.conceptG.type-color-lime circle { fill: #cddc39; }
 g.conceptG.type-color-lime text { fill: black; }
+g.conceptG.type-color-lime:hover circle { fill: #EEFF41; }
+g.conceptG.type-color-lime.selected circle { fill: #cddc39; }
+g.conceptG.type-color-lime.selected:hover circle { fill: #EEFF41; }
 g.conceptG.type-color-yellow circle { fill: #ffeb3b; }
 g.conceptG.type-color-yellow text { fill: black; }
+g.conceptG.type-color-yellow:hover circle { fill: #FFFF00; }
+g.conceptG.type-color-yellow.selected circle { fill: #ffeb3b; }
+g.conceptG.type-color-yellow.selected:hover circle { fill: #FFFF00; }
 g.conceptG.type-color-amber circle { fill: #ffc107; }
 g.conceptG.type-color-amber text { fill: black; }
+g.conceptG.type-color-amber:hover circle { fill: #FFD740; }
+g.conceptG.type-color-amber.selected circle { fill: #ffc107; }
+g.conceptG.type-color-amber.selected:hover circle { fill: #FFD740; }
 g.conceptG.type-color-orange circle { fill: #ff9800; }
 g.conceptG.type-color-orange text { fill: black; }
+g.conceptG.type-color-orange:hover circle { fill: #FFAB40; }
+g.conceptG.type-color-orange.selected circle { fill: #ff9800; }
+g.conceptG.type-color-orange.selected:hover circle { fill: #FFAB40; }
 g.conceptG.type-color-deep-orange circle { fill: #ff5722; }
 g.conceptG.type-color-deep-orange text { fill: white; }
+g.conceptG.type-color-deep-orange:hover circle { fill: #FF6E40; }
+g.conceptG.type-color-deep-orange.selected circle { fill: #ff5722; }
+g.conceptG.type-color-deep-orange.selected:hover circle { fill: #FF6E40; }
 g.conceptG.type-color-brown circle { fill: #795548; }
 g.conceptG.type-color-brown text { fill: white; }
+g.conceptG.type-color-brown:hover circle { fill: #8D6E63; }
+g.conceptG.type-color-brown.selected circle { fill: #795548; }
+g.conceptG.type-color-brown.selected:hover circle { fill: #8D6E63; }
 g.conceptG.type-color-grey circle { fill: #757575; }
 g.conceptG.type-color-grey text { fill: white; }
+g.conceptG.type-color-grey:hover circle { fill: #9E9E9E; }
+g.conceptG.type-color-grey.selected circle { fill: #757575; }
+g.conceptG.type-color-grey.selected:hover circle { fill: #9E9E9E; }
 g.conceptG.type-color-blue-grey circle { fill: #607d8b; }
 g.conceptG.type-color-blue-grey text { fill: white; }
+g.conceptG.type-color-blue-grey:hover circle { fill: #78909C; }
+g.conceptG.type-color-blue-grey.selected circle { fill: #607d8b; }
+g.conceptG.type-color-blue-grey.selected:hover circle { fill: #78909C; }
 
 
-g.conceptG.selected circle{
-    fill: rgb(250, 232, 255) !important;
-}
-g.conceptG.selected text{
-    fill: black !important;
-}
-g.conceptG.selected:hover circle{
-    fill: rgb(250, 232, 255) !important;
-}
-g.conceptG.selected:hover text{
-    fill: black !important;
-}
 
 path.link {
     fill: none;

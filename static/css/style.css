@@ -457,6 +457,24 @@ body {
 }
 
 
+/* open graph */
+#openGraphModal .modal-body .list-group {
+    max-height: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+#graphList .list-group-item.active,
+#graphList .list-group-item.active:hover,
+#graphList .list-group-item.active:focus,
+#graphList .list-group-item.active,
+#graphList .list-group-item.active:hover,
+#graphList .list-group-item.active:focus {
+    background-color: #616161;
+    border-color: #424242;
+    color: white;
+}
+
+
 /* colors */
 .type-color-bg.type-color-red { background-color: #f44336 !important; }
 .type-color-text.type-color-red { color: white !important; }

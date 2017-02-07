@@ -285,7 +285,7 @@ function setSelectedEdge(d3PathG, edgeData) {
         'edgeData': edgeData
     }
 }
-function setUnselected() {
+function setUnselected(graphUnselect) {
     $('#subMenuNode').hide();
     $('#subMenuEdge').hide();
     $('#subMenuNone').show();
@@ -303,10 +303,16 @@ function setUnselected() {
     $('#sideMenuNodeList > li > a').removeClass('active');
     $('#sideMenuEdgeList > li > a').removeClass('active');
 
+    if (graphUnselect) {
+        if (networkGraph.state.selectedEdge != null)
+            networkGraph.removeSelectFromEdge();
+        else if (networkGraph.state.selectedNode != null)
+            networkGraph.removeSelectFromNode();
+    }
+
     selectedNode = null;
     selectedEdge = null;
 }
-
 function nodeTypeToSubMenuHtml(typeid) {
     return "<span class='nodeTypeColor type-color-bg type-color-"
             + nodeTypes[typeid]['color'] + "'>&nbsp;</span><span class='nodeTypeName'>"
@@ -330,6 +336,7 @@ function nodeDataToSubMenuHtml(nodeData) {
 function createNode() {
     var createdNode = networkGraph.createNode();
     updateNodeList('created', createdNode);
+    networkGraph.selectNode(createdNode.id);
 }
 function editNode() {
     if (selectedNode != null) {
@@ -451,12 +458,6 @@ function manageNodeType() {
 function manageConfidence() {
     $('#manageConfidenceModal').modal();
 }
-function printFile() {
-
-}
-function showAbout() {
-
-}
 
 $(document).ready(function() {
     setUnselected();
@@ -492,13 +493,13 @@ $(document).ready(function() {
     $('.menuManageNodeType').click(manageNodeType);
     $('.menuManageConfidence').click(manageConfidence);
 
-    $('.menuNew').click(newFile);
-    $('.menuOpen').click(openFile);
-    $('.menuClose').click(closeFile);
-    $('.menuSave').click(saveFile);
-    $('.menuSaveAs').click(saveAsFile);
-    $('.menuPrint').click(printFile);
-    $('.menuAbout').click(showAbout);
+    $('.menuNew').click(menuNewGraph);
+    $('.menuOpen').click(menuOpenGraph);
+    $('.menuClose').click(menuCloseGraph);
+    $('.menuSave').click(menuSaveGraph);
+    $('.menuSaveAs').click(menuSaveAsGraph);
+    $('.menuPrint').click(menuPrintGraph);
+    $('.menuAbout').click(menuAbout);
 });
 
 var selectedNodeTypeElem = null;
@@ -516,6 +517,11 @@ function initUI() {
     });
     $('#btnNewEdgeModalConfirm').click(createEdgeConfirm);
 
+    // Confirm Modal
+    $('#confirmModal').on('hidden.bs.modal', function (e) {
+        $('#btnConfirmModal').off('click').unbind('click');
+    });
+
     initManageNodeTypeUI();
     initManageConfidenceUI();
     initSignUI();
@@ -528,7 +534,7 @@ function initManageNodeTypeUI() {
     $('#manageNodeTypeColorList').css('visibility', 'hidden');
 
     $('#manageNodeTypeModal').on('hide.bs.modal', function (e) {
-        setUnselected();
+        setUnselected(true);
         updateNodeTypes();
     });
     $('#manageNodeTypeModal').on('hidden.bs.modal', function (e) {
@@ -951,16 +957,56 @@ function openAlertModal(msg, title) {
     $('#alertModal').modal();
 }
 
+function openConfirmModal(msg, title, callback) {
+    $('#confirmModalTitle').text(title);
+    $('#confirmModalMsg').text(msg);
+    $('#btnConfirmModal').unbind('click').off('click').click(callback);
+    $('#confirmModal').modal();
+}
+
 function initControllers() {
-    $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle').attr('disabled', true)
-        .addClass('disabled');
-    $('#signinForm').on('submit', function (e) {
-        e.preventDefault();
-        signin();
+    // getSesison();
+
+    // $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle').attr('disabled', true)
+    //     .addClass('disabled');
+    // $('#signinForm').on('submit', function (e) {
+    //     e.preventDefault();
+    //     signin();
+    // });
+    // $('#menuSignout').click(function() {
+    //     signout();
+    // });
+    user = {name: 'sm', email: 'sm@gmail.com'}
+    $('#menuSignin').hide();
+    $('#menuUserWelcome').text("Welcome " + user.name + "!");
+    $('#menuUser').show();
+    $('.content').show();
+    $('.welcome-overlay').hide();
+    $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle')
+        .attr('disabled', false).removeClass('disabled');
+}
+
+function getSesison() {
+    $.LoadingOverlay('show');
+    $.ajax("http://203.253.23.19:8080/session", {
+        method: 'GET',
+        dataType: 'json',
+        success: function (res) {
+            $.LoadingOverlay('hide');
+            if (res['result'] == 'success') {
+                user = res['user'];
+                $('#menuSignin').hide();
+                $('#menuUserWelcome').text("Welcome " + user.name + "!");
+                $('#menuUser').show();
+                $('.content').show();
+                $('.welcome-overlay').hide();
+                $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle')
+                    .attr('disabled', false).removeClass('disabled');
+            }
+        }, error: function(xhr, status, error) {
+            $.LoadingOverlay('hide');
+        }
     });
-    $('#menuSignout').click(function() {
-        signout();
-    })
 }
 
 function signin() {
@@ -987,6 +1033,8 @@ function signin() {
                 $('#menuUser').show();
                 $('.content').show();
                 $('.welcome-overlay').hide();
+                $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle')
+                    .attr('disabled', false).removeClass('disabled');
             } else {
                 openAlertModal(res['message'], 'Login Failure');
             }
@@ -1009,6 +1057,8 @@ function signout() {
         $('#menuUser').hide();
         $('.welcome-overlay').show();
         $('.content').hide();
+        $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle').attr('disabled', true)
+            .addClass('disabled');
     }
 
     $.LoadingOverlay('show');
@@ -1023,28 +1073,41 @@ function signout() {
     });
 }
 
-function newFile() {
-    networkGraph.deleteGraph();
+function menuNewGraph() {
+    $('#newGraphModal').modal();
+}
+function newGraph() {
     setUnselected();
+    networkGraph.deleteGraph(true);
 }
 
-function openFile() {
-
+function menuOpenGraph() {
+    $('#openGraphModal').modal();
 }
 
-function closeFile() {
+function menuCloseGraph() {
 
 }
-
-function saveFile() {
-
-}
-
-function saveAsFile() {
-
-}
-
-function deleteFile() {
-    networkGraph.deleteGraph();
+function closeGraph() {
     setUnselected();
+    networkGraph.deleteGraph(true);
+
+}
+
+function menuSaveGraph() {
+
+}
+
+function menuSaveAsGraph() {
+    $('#saveAsGraphModal').modal();
+}
+
+function menuPrintGraph() {
+}
+function menuAbout() {
+}
+
+function menuDeleteGraph() {
+    setUnselected();
+    networkGraph.deleteGraph(true);
 }

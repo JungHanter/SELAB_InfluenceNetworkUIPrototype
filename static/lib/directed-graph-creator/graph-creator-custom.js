@@ -165,7 +165,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
 
     GraphCreator.prototype.deleteGraph = function(skipPrompt){
         var thisGraph = this,
-                doDelete = true;
+            doDelete = true;
         if (!skipPrompt){
             doDelete = window.confirm("Press OK to delete this graph");
         }
@@ -844,10 +844,10 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         thisGraph.nodes.push(newNodeData);
         thisGraph.updateGraph();
 
-        var d3Node = thisGraph.circles.filter(function(cd) {
-            return cd.id === newNodeData.id;
-        });
-        thisGraph.replaceSelectNode(d3Node, newNodeData);
+        // var d3Node = thisGraph.circles.filter(function(cd) {
+        //     return cd.id === newNodeData.id;
+        // });
+        // thisGraph.replaceSelectNode(d3Node, newNodeData);
 
         return newNodeData;
     }
