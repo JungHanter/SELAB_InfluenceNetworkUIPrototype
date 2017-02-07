@@ -221,9 +221,9 @@
 
 
         <!-- Modals -->
-        <div id="loginModal" class="modal fade" tabindex="-1" role="dialog"
+        <div id="signinModal" class="modal fade" tabindex="-1" role="dialog"
              data-backdrop="static" data-keyboard="false">
-            <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Welcome to Influence Network!</h4>
@@ -231,28 +231,21 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-xs-12">
-                                <div>
-                                    <span>Please login first for using this service.</span>
-                                    <br/>
-                                    <br/>
-                                </div>
-                                <form id="loginForm" class="form-signin" name="loginForm" accept-charset="UTF-8">
-                                    <label for="inputId" class="sr-only">Username</label>
-                                    <input type="text" id="inputId" name="id" maxlength="20" class="form-control"
-                                           placeholder="User ID" required autofocus>
-                                    <label for="inputPw" class="sr-only">Password</label>
+                                <form id="signinForm" class="form-signin" name="signinForm" accept-charset="UTF-8">
+                                    <input type="email" id="inputEmail" name="email" maxlength="20" class="form-control"
+                                           placeholder="Email" required autofocus>
                                     <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control"
                                            placeholder="Password" required>
-                                    <div class="checkbox">
+                                    <div id="checkboxRemember" class="checkbox">
                                         <label>
                                             <input id="checkRemember" type="checkbox" value="remember"> Remember Me
                                         </label>
                                     </div>
-                                    <button id="btnLogin" class="btn btn-dark btn-block" type="submit">Log in</button>
+                                    <button id="btnSignin" class="btn btn-dark btn-block" type="submit">Sign in</button>
                                 </form>
-                                <div>
-                                    <a href="#">Signup</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <a href="#" class="pull-right">Find ID/PW</a>
+                                <div class="signin-more">
+                                    <a href="#" class="pull-right">Forgot your password?</a>
+                                    <a href="#">Create new accout?</a>
                                 </div>
                             </div>
                         </div>
@@ -273,32 +266,6 @@
                             <div class="col-xs-12">
                                 <form id="signupForm" class="form-signup"  name="signupForm" accept-charset="UTF-8">
                                     <div class="form-group">
-                                        <label for="inputId" >User ID</label>
-                                        <input type="text" id="inputId" name="id" maxlength="20"
-                                               class="form-control form-control-input valid"
-                                               placeholder="User ID">
-                                        <button type="button" id="btnCheckId" class="btn btn-dark btn-block
-                                                                                     form-control form-control-button">
-                                            Check
-                                        </button>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="inputPw">Password</label>
-                                        <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control invalid"
-                                               placeholder="Password">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="inputPw">Confirm Password</label>
-                                        <input type="password" id="inputPwConfirm" maxlength="20" name="pwConfirm" class="form-control"
-                                               placeholder="Confirm Password">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="inputName" >Name</label>
-                                        <input type="text" id="inputName" name="inputName" maxlength="40" class="form-control valid"
-                                               placeholder="Name">
-                                    </div>
-                                    <div class="form-group">
                                         <label for="inputEmail" >Email Address</label>
                                         <input type="email" id="inputEmail" name="email" maxlength="100"
                                                class="form-control form-control-input valid"
@@ -307,6 +274,21 @@
                                                                                         form-control form-control-button">
                                             Check
                                         </button>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputPw">Password</label>
+                                        <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control invalid"
+                                               placeholder="Password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputPw">Password Confirm</label>
+                                        <input type="password" id="inputPwConfirm" maxlength="20" name="pwConfirm" class="form-control"
+                                               placeholder="Password Confirm">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputName" >Name</label>
+                                        <input type="text" id="inputName" name="inputName" maxlength="40" class="form-control valid"
+                                               placeholder="Name">
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-6">
