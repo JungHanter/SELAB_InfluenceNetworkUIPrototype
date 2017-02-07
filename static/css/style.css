@@ -306,6 +306,9 @@ body {
 #manageNodeTypeList .typeId {
     display: none;
 }
+#manageNodeTypeList .list-group-item {
+    min-height: 42px;
+}
 #manageNodeTypeList .list-group-item.active,
 #manageNodeTypeList .list-group-item.active:hover,
 #manageNodeTypeList .list-group-item.active:focus,

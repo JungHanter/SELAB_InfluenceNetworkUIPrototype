@@ -630,15 +630,13 @@ function initManageNodeTypeUI() {
                 var typeid = parseInt(appendedElem.find('> .typeId').text());
                 nodeTypes[typeid]['name'] = $(this).text();
                 editNodeTypeConfidenceName(typeid);
-                // $('#manageNodeTypeModal .modal-body .row::before').focus();
-                // document.execCommand('blur', false, true);
-                // document.execCommand('selectAll', false, null);
+                window.getSelection().removeAllRanges();
             }).keydown(function(e) {
                 if (e.which == 13) {
                     $(this).blur();
                 }
             }).focus();
-        // document.execCommand('selectAll', false, null);
+        document.execCommand('selectAll', false, null);
     });
 
     $('#btnEditNodeTypeName').click(function() {
@@ -654,6 +652,7 @@ function initManageNodeTypeUI() {
                     var typeid = parseInt(nowElem.find('> .typeId').text());
                     nodeTypes[typeid]['name'] = $(this).text();
                     editNodeTypeConfidenceName(typeid);
+                    window.getSelection().removeAllRanges();
 
                     // if (selectedNodeTypeElem != null)
                     if (selectedNodeTypeElem == nowElem)
@@ -663,7 +662,7 @@ function initManageNodeTypeUI() {
                         $(this).blur();
                     }
                 }).focus();
-            // document.execCommand('selectAll', false, null);
+            document.execCommand('selectAll', false, null);
         }
     });
 
@@ -976,9 +975,9 @@ function initControllers() {
     // $('#menuSignout').click(function() {
     //     signout();
     // });
-    user = {name: 'sm', email: 'sm@gmail.com'}
+    user = {user_name: 'sm', email: 'sm@gmail.com'}
     $('#menuSignin').hide();
-    $('#menuUserWelcome').text("Welcome " + user.name + "!");
+    $('#menuUserWelcome').text("Welcome " + user.user_name + "!");
     $('#menuUser').show();
     $('.content').show();
     $('.welcome-overlay').hide();
@@ -996,7 +995,7 @@ function getSesison() {
             if (res['result'] == 'success') {
                 user = res['user'];
                 $('#menuSignin').hide();
-                $('#menuUserWelcome').text("Welcome " + user.name + "!");
+                $('#menuUserWelcome').text("Welcome " + user.user_name + "!");
                 $('#menuUser').show();
                 $('.content').show();
                 $('.welcome-overlay').hide();
@@ -1011,7 +1010,7 @@ function getSesison() {
 
 function signin() {
     var email = $('#signinEmail').val();
-    var pw = $('#signinPassword').val();
+    var password = $('#signinPassword').val();
 
     $.LoadingOverlay('show');
     $.ajax("http://203.253.23.19:8080/session", {
@@ -1020,16 +1019,16 @@ function signin() {
         data: JSON.stringify({
             action: 'login',
             email: email,
-            pw: pw
+            password: password
         }),
         success: function (res) {
             $.LoadingOverlay('hide');
             console.log(res);
             if (res['result'] == 'success') {
                 user = res['user'];
-                openAlertModal("Welcome " + user.name + "!", 'Login Success');
+                openAlertModal("Welcome " + user.user_name + "!", 'Login Success');
                 $('#menuSignin').hide();
-                $('#menuUserWelcome').text("Welcome " + user.name + "!");
+                $('#menuUserWelcome').text("Welcome " + user.user_name + "!");
                 $('#menuUser').show();
                 $('.content').show();
                 $('.welcome-overlay').hide();
@@ -1082,7 +1081,37 @@ function newGraph() {
 }
 
 function menuOpenGraph() {
-    $('#openGraphModal').modal();
+    $.LoadingOverlay('show');
+    $.ajax("http://203.253.23.19:8080/graph", {
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            email: user.email
+        },
+        success: function (res) {
+            $.LoadingOverlay('hide');
+            console.log(res);
+            if (res['result'] == 'success') {
+                graph_list = res['graph_list'];
+
+                $('#graphList').empty();
+                for(var i=0; i<graph_list.length; i++) {
+                    var graph = graph_list[i];
+                    $('#graphList').append("<a href='#' class='list-group-item' data-graphid="
+                        + graph.graph_id + ">" + graph.graph_name + "</a>" );
+                }
+                $('#graphList .list-group-item').click(function() {
+                    $('#graphList .list-group-item').removeClass('active');
+                    $(this).addClass('active');
+                });
+                $('#openGraphModal').modal();
+            } else {
+                openAlertModal(res['message'], 'Retrive Graph List Failure');
+            }
+        }, error: function(xhr, status, error) {
+            openAlertModal(xhr.statusText, 'Retrive Graph List Failure');
+        }
+    })
 }
 
 function menuCloseGraph() {
