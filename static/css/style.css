@@ -202,11 +202,6 @@ body {
     width : 63px;
 }
 
-.content {
-    width: auto;
-    height: auto;
-}
-
 .graph-title {
     width: 100%;
     height: 31px;
@@ -232,6 +227,24 @@ body {
     /*min-width: 640px;*/
     /*min-height: 480px;*/
     background-color: white;
+}
+
+.content {
+    display: none;
+    width: auto;
+    height: auto;
+}
+
+.welcome-overlay {
+    /*display: none;*/
+    background: white;
+    color: black;
+    text-align: center;
+    height: 100%;
+    /*min-height: 1600px;*/
+    /*position: relative;*/
+    /*top: 0px;*/
+
 }
 
 #subMenuNodeType .nodeTypeColor,

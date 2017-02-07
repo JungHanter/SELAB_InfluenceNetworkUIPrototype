@@ -1,3 +1,6 @@
+var user = null;
+var nowGraph = null;
+
 var typeColors = [
     'red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue',
     'light-blue', 'cyan', 'teal', 'green', 'light-green',
@@ -448,27 +451,6 @@ function manageNodeType() {
 function manageConfidence() {
     $('#manageConfidenceModal').modal();
 }
-
-function newFile() {
-    networkGraph.deleteGraph();
-    setUnselected();
-}
-function openFile() {
-
-}
-function closeFile() {
-
-}
-function saveFile() {
-
-}
-function saveAsFile() {
-
-}
-function deleteFile() {
-    networkGraph.deleteGraph();
-    setUnselected();
-}
 function printFile() {
 
 }
@@ -536,6 +518,8 @@ function initUI() {
 
     initManageNodeTypeUI();
     initManageConfidenceUI();
+    initSignUI();
+    initControllers();
 }
 
 function initManageNodeTypeUI() {
@@ -945,6 +929,19 @@ function deleteNodeTypeConfidence(typeid) {
     }
 }
 
+function initSignUI() {
+    var welcomeOverlayHeight = $(window).height() - global_consts.graphSvgStartY;
+    var welcomeTextMarginTop = welcomeOverlayHeight / 2 - 40;
+    $('.welcome-overlay').css('height', welcomeOverlayHeight);
+    $('.welcome-overlay > h2').css('margin-top', welcomeTextMarginTop);
+    $( window ).resize(function() {
+        var welcomeOverlayHeight = $(window).height() - global_consts.graphSvgStartY;
+        var welcomeTextMarginTop = welcomeOverlayHeight / 2 - 40;
+        $('.welcome-overlay').css('height', welcomeOverlayHeight);
+        $('.welcome-overlay > h2').css('margin-top', welcomeTextMarginTop);
+    });
+}
+
 function openAlertModal(msg, title) {
     if (title == undefined || title == null || !/\S/.test(title)) {
         title = "Alert";
@@ -952,4 +949,102 @@ function openAlertModal(msg, title) {
     $('#alertModalTitle').text(title);
     $('#alertModalMsg').text(msg);
     $('#alertModal').modal();
+}
+
+function initControllers() {
+    $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle').attr('disabled', true)
+        .addClass('disabled');
+    $('#signinForm').on('submit', function (e) {
+        e.preventDefault();
+        signin();
+    });
+    $('#menuSignout').click(function() {
+        signout();
+    })
+}
+
+function signin() {
+    var email = $('#signinEmail').val();
+    var pw = $('#signinPassword').val();
+
+    $.LoadingOverlay('show');
+    $.ajax("http://203.253.23.19:8080/session", {
+        method: 'POST',
+        dataType: 'json',
+        data: JSON.stringify({
+            action: 'login',
+            email: email,
+            pw: pw
+        }),
+        success: function (res) {
+            $.LoadingOverlay('hide');
+            console.log(res);
+            if (res['result'] == 'success') {
+                user = res['user'];
+                openAlertModal("Welcome " + user.name + "!", 'Login Success');
+                $('#menuSignin').hide();
+                $('#menuUserWelcome').text("Welcome " + user.name + "!");
+                $('#menuUser').show();
+                $('.content').show();
+                $('.welcome-overlay').hide();
+            } else {
+                openAlertModal(res['message'], 'Login Failure');
+            }
+        }, error: function(xhr, status, error) {
+            $.LoadingOverlay('hide');
+            console.log(xhr);
+            openAlertModal(xhr.statusText, 'Login Failure');
+        }
+    });
+}
+
+function signout() {
+    var signoutCallback = function(data) {
+        $.LoadingOverlay('hide');
+        console.log(data);
+        user = null;
+        nowGraph = null;
+        networkGraph.deleteGraph();
+        $('#menuSignin').show();
+        $('#menuUser').hide();
+        $('.welcome-overlay').show();
+        $('.content').hide();
+    }
+
+    $.LoadingOverlay('show');
+    $.ajax("http://203.253.23.19:8080/session", {
+        method: 'POST',
+        dataType: 'json',
+        data: JSON.stringify({
+            action: 'logout'
+        }),
+        success: signoutCallback,
+        error: signoutCallback
+    });
+}
+
+function newFile() {
+    networkGraph.deleteGraph();
+    setUnselected();
+}
+
+function openFile() {
+
+}
+
+function closeFile() {
+
+}
+
+function saveFile() {
+
+}
+
+function saveAsFile() {
+
+}
+
+function deleteFile() {
+    networkGraph.deleteGraph();
+    setUnselected();
 }

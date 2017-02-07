@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Influence Network Analytics</title>
+        <title>Influence Network Analyzer</title>
 
         <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-custom.css' %}">
@@ -76,19 +76,19 @@
                         </li>
                     </ul>
 
-                    <ul class="nav navbar-nav navbar-right" style="display: none">
+                    <ul class="nav navbar-nav navbar-right" id="menuUser" style="display: none">
                         <li class="dropdown">
                             <a href="#" id="menuUserWelcome" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome John!</a>
                             <ul class="dropdown-menu">
-                                <li><a id="menuSignOut" href="#">Sign out</a></li>
+                                <li><a id="menuSignout" href="#">Sign out</a></li>
                             </ul>
                         </li>
                     </ul>
                     <div class="nav navbar-nav navbar-right" id="menuSignin">
-                        <form id="signinForm" class="form-signin" name="signinForm" accept-charset="UTF-8">
-                            <input type="email" id="inputEmail" name="email" maxlength="20" class="form-control"
+                        <form id="signinForm" class="form-signin" name="signinForm" accept-charset="UTF-8" method="POST">
+                            <input type="email" id="signinEmail" name="email" maxlength="20" class="form-control"
                                    placeholder="Email" required autofocus>
-                            <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control"
+                            <input type="password" id="signinPassword" name="pw" maxlength="20" class="form-control"
                                    placeholder="Password" required>
                             <div id="checkboxRemember" class="checkbox">
                                 <label>
@@ -245,6 +245,10 @@
                 <div class="graph-title"><span id="graphName">New Graph</span></div>
                 <div id="graph"></div>
             </div>
+        </div>
+
+        <div class="welcome-overlay">
+            <h2>Welcome to Influence Network Analyzer!</h2>
         </div>
 
 
