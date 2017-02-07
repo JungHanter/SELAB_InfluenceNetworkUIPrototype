@@ -75,6 +75,33 @@
                             </ul>
                         </li>
                     </ul>
+
+                    <ul class="nav navbar-nav navbar-right" style="display: none">
+                        <li class="dropdown">
+                            <a href="#" id="menuUserWelcome" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome John!</a>
+                            <ul class="dropdown-menu">
+                                <li><a id="menuSignOut" href="#">Sign out</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="nav navbar-nav navbar-right" id="menuSignin">
+                        <form id="signinForm" class="form-signin" name="signinForm" accept-charset="UTF-8">
+                            <input type="email" id="inputEmail" name="email" maxlength="20" class="form-control"
+                                   placeholder="Email" required autofocus>
+                            <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control"
+                                   placeholder="Password" required>
+                            <div id="checkboxRemember" class="checkbox">
+                                <label>
+                                    <input id="checkRemember" type="checkbox" value="remember"> Remember Me
+                                </label>
+                            </div>
+                            <button id="btnSignin" class="btn btn-dark btn-block" type="submit">Sign in</button>
+                        </form>
+                        <div class="signin-more">
+                            <a href="#">Forgot your password?</a>
+                            <a href="#" class="pull-right">Create new account?</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -215,46 +242,14 @@
 {#                <button type="button" class="btn btn-dark side-menu-button menuDeleteEdge">DE<span class="tooltip-text">Delete Edge</span></button>#}
             </nav>
             <div class="graph-area">
+                <div class="graph-title"><span id="graphName">New Graph</span></div>
                 <div id="graph"></div>
             </div>
         </div>
 
 
         <!-- Modals -->
-        <div id="signinModal" class="modal fade" tabindex="-1" role="dialog"
-             data-backdrop="static" data-keyboard="false">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Welcome to Influence Network!</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <form id="signinForm" class="form-signin" name="signinForm" accept-charset="UTF-8">
-                                    <input type="email" id="inputEmail" name="email" maxlength="20" class="form-control"
-                                           placeholder="Email" required autofocus>
-                                    <input type="password" id="inputPw" name="pw" maxlength="20" class="form-control"
-                                           placeholder="Password" required>
-                                    <div id="checkboxRemember" class="checkbox">
-                                        <label>
-                                            <input id="checkRemember" type="checkbox" value="remember"> Remember Me
-                                        </label>
-                                    </div>
-                                    <button id="btnSignin" class="btn btn-dark btn-block" type="submit">Sign in</button>
-                                </form>
-                                <div class="signin-more">
-                                    <a href="#" class="pull-right">Forgot your password?</a>
-                                    <a href="#">Create new accout?</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="signupModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="false">
+        <div id="signupModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static">
             <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

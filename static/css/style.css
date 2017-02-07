@@ -371,19 +371,28 @@ body {
 
 
 /*signin form*/
-#signinModal .modal-dialog,
-#signupModal .modal-dialog {
-    width:480px;
+#menuSignin {
+    background: #616161;
+    color: white;
+    border-left: 1px solid #212121;
+    border-bottom: 1px solid #212121;
+    width: 360px;
+    height: 190px;
+    padding: 15px;
+    position: absolute;
+    z-index: 100;
+    right: 0;
+    top: 0;
 }
-#signinModal #checkboxRemember {
+#menuSignin #checkboxRemember {
     display: inline-block;
 }
-#signinModal #btnSignin {
+#menuSignin #btnSignin {
     display: inline-block;
     float: right;
-    width: 160px !important;
+    width: 140px !important;
 }
-#signinModal .signin-more {
+#menuSignin .signin-more {
     margin-top: 10px;
 }
 .form-signin {}
@@ -413,8 +422,9 @@ body {
 }
 
 /* signup form */
-.form-signup {}
-
+#signupModal .modal-dialog {
+    width:400px;
+}
 /* form group for signin/up */
 .modal-body .form-group label {
     display: block;
