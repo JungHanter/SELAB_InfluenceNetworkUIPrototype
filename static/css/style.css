@@ -218,15 +218,19 @@ body {
 }
 
 .graph-area {
-    /*margin-top: 74px;*/
-    /*margin-left: 55px;*/
     width: calc(100% - 240px);
     height: 100%;
     display: inline-block;
     float: right;
-    /*min-width: 640px;*/
-    /*min-height: 480px;*/
     background-color: white;
+}
+.graph-close-overlay {
+    width: calc(100% - 240px);
+    height: 100%;
+    display: inline-block;
+    float: right;
+    background-color: #e0e0e0;
+    text-align: center;
 }
 
 .content {
@@ -234,17 +238,12 @@ body {
     width: auto;
     height: auto;
 }
-
 .welcome-overlay {
     /*display: none;*/
     background: white;
     color: black;
     text-align: center;
     height: 100%;
-    /*min-height: 1600px;*/
-    /*position: relative;*/
-    /*top: 0px;*/
-
 }
 
 #subMenuNodeType .nodeTypeColor,

@@ -1,5 +1,5 @@
 var user = null;
-var nowGraph = null;
+var nowGraphInfo = null;
 
 var typeColors = [
     'red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue',
@@ -524,7 +524,6 @@ function initUI() {
 
     initManageNodeTypeUI();
     initManageConfidenceUI();
-    initSignUI();
     initControllers();
 }
 
@@ -934,19 +933,6 @@ function deleteNodeTypeConfidence(typeid) {
     }
 }
 
-function initSignUI() {
-    var welcomeOverlayHeight = $(window).height() - global_consts.graphSvgStartY;
-    var welcomeTextMarginTop = welcomeOverlayHeight / 2 - 40;
-    $('.welcome-overlay').css('height', welcomeOverlayHeight);
-    $('.welcome-overlay > h2').css('margin-top', welcomeTextMarginTop);
-    $( window ).resize(function() {
-        var welcomeOverlayHeight = $(window).height() - global_consts.graphSvgStartY;
-        var welcomeTextMarginTop = welcomeOverlayHeight / 2 - 40;
-        $('.welcome-overlay').css('height', welcomeOverlayHeight);
-        $('.welcome-overlay > h2').css('margin-top', welcomeTextMarginTop);
-    });
-}
-
 function openAlertModal(msg, title) {
     if (title == undefined || title == null || !/\S/.test(title)) {
         title = "Alert";
@@ -964,25 +950,107 @@ function openConfirmModal(msg, title, callback) {
 }
 
 function initControllers() {
+    var welcomeOverlayHeight = $(window).height() - global_consts.graphSvgStartY;
+    var welcomeTextMarginTop = welcomeOverlayHeight / 2 - 40;
+    $('.welcome-overlay').css('height', welcomeOverlayHeight);
+    $('.welcome-overlay > h2').css('margin-top', welcomeTextMarginTop);
+    $( window ).resize(function() {
+        var welcomeOverlayHeight = $(window).height() - global_consts.graphSvgStartY;
+        var welcomeTextMarginTop = welcomeOverlayHeight / 2 - 40;
+        $('.welcome-overlay').css('height', welcomeOverlayHeight);
+        $('.welcome-overlay > h2').css('margin-top', welcomeTextMarginTop);
+    });
+
+    var graphOverlayHeight = $(window).height() - global_consts.graphSvgStartY + 31;
+    var graphOverlayTextMarginTop = graphOverlayHeight / 2 - 40;
+    $('.graph-close-overlay').css('height', graphOverlayHeight);
+    $('.graph-close-overlay > h4').css('margin-top', graphOverlayTextMarginTop);
+    $( window ).resize(function() {
+        var graphOverlayHeight = $(window).height() - global_consts.graphSvgStartY + 31;
+        var graphOverlayTextMarginTop = graphOverlayHeight / 2 - 40;
+        $('.graph-close-overlay').css('height', graphOverlayHeight);
+        $('.graph-close-overlay > h4').css('margin-top', graphOverlayTextMarginTop);
+    });
+
     // getSesison();
 
-    // $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle').attr('disabled', true)
-    //     .addClass('disabled');
-    // $('#signinForm').on('submit', function (e) {
-    //     e.preventDefault();
-    //     signin();
-    // });
-    // $('#menuSignout').click(function() {
-    //     signout();
-    // });
+    $('.main-menu > .dropdown > .dropdown-toggle').attr('disabled', true)
+        .addClass('disabled');
+    $('#signinForm').on('submit', function (e) {
+        e.preventDefault();
+        signin();
+    });
+    $('#menuSignout').click(function() {
+        signout();
+    });
+
+    //for test
     user = {user_name: 'sm', email: 'sm@gmail.com'}
     $('#menuSignin').hide();
     $('#menuUserWelcome').text("Welcome " + user.user_name + "!");
     $('#menuUser').show();
     $('.content').show();
     $('.welcome-overlay').hide();
-    $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle')
+    $('.main-menu > .dropdown > .dropdown-toggle')
         .attr('disabled', false).removeClass('disabled');
+    setGraphUIEnable(false);
+
+    $('#btnNewGraph').click(function() {
+        var newGraphName = $('#newGraphName').val();
+        if (newGraphName!=null && /\S/.test(newGraphName)) {
+            if (newGraphName.substring(0,1) == ' ') {
+                openAlertModal("Graph name cannot start with a white space.", "Create Error");
+            } else {
+                if (nowGraphInfo == null) {
+                    $('#newGraphModal').modal('hide');
+                    newGraph(newGraphName);
+                } else {
+                    openConfirmModal("Are you sure to create new graph? \nIf you didn't save the current graph, any unsaved changes will be discarded.",
+                            "Create Graph Confirm", function() {
+                        $('#openGraphModal').modal('hide');
+                        newGraph(newGraphName);
+                    });
+                }
+            }
+        } else openAlertModal("Please input a graph name.", "Create Error");
+    });
+    $('#btnOpenGraph').click(function() {
+        var selectedGraphId = parseInt($('#graphList .list-group-item.active').data('graphid'));
+        if (!isNaN(selectedGraphId) && isFinite(selectedGraphId))  {
+            if (nowGraphInfo == null) {
+                $('#openGraphModal').modal('hide');
+                openGraph(selectedGraphId);
+            } else {
+                openConfirmModal("Are you sure to open the selected graph? \nIf you didn't save the current graph, any unsaved changes will be discarded.",
+                        "Open Graph Confirm", function() {
+                    $('#openGraphModal').modal('hide');
+                    openGraph(selectedGraphId);
+                });
+            }
+        } else openAlertModal("Please select a graph.", "Open Error");
+    });
+}
+
+function setGraphUIEnable(enable) {
+    if (enable) {
+        $('.main-menu > .dropdown > .dropdown-toggle:not(.dropdown-default)')
+            .attr('disabled', false).removeClass('disabled');
+        $('.main-menu > .dropdown > .dropdown-menu-file a:not(.menuDefault)')
+            .attr('disabled', false).removeClass('disabled');
+        $('.side-menu .menuNewNode, .side-menu .menuNewEdge')
+            .attr('disabled', false).removeClass('disabled');
+        $('.graph-close-overlay').css('display', 'none');
+        $('.graph-area').css('display', 'inline-block');
+    } else {
+        $('.main-menu > .dropdown > .dropdown-toggle:not(.dropdown-default)')
+            .attr('disabled', true).addClass('disabled');
+        $('.main-menu > .dropdown > .dropdown-menu-file a:not(.menuDefault)')
+            .attr('disabled', true).addClass('disabled');
+        $('.side-menu .menuNewNode, .side-menu .menuNewEdge')
+            .attr('disabled', true).addClass('disabled');
+        $('.graph-area').css('display', 'none');
+        $('.graph-close-overlay').css('display', 'inline-block');
+    }
 }
 
 function getSesison() {
@@ -999,8 +1067,9 @@ function getSesison() {
                 $('#menuUser').show();
                 $('.content').show();
                 $('.welcome-overlay').hide();
-                $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle')
+                $('.main-menu > .dropdown > .dropdown-toggle')
                     .attr('disabled', false).removeClass('disabled');
+                setGraphUIEnable(false);
             }
         }, error: function(xhr, status, error) {
             $.LoadingOverlay('hide');
@@ -1032,8 +1101,9 @@ function signin() {
                 $('#menuUser').show();
                 $('.content').show();
                 $('.welcome-overlay').hide();
-                $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle')
+                $('.main-menu > .dropdown > .dropdown-toggle')
                     .attr('disabled', false).removeClass('disabled');
+                setGraphUIEnable(false);
             } else {
                 openAlertModal(res['message'], 'Login Failure');
             }
@@ -1050,13 +1120,13 @@ function signout() {
         $.LoadingOverlay('hide');
         console.log(data);
         user = null;
-        nowGraph = null;
+        nowGraphInfo = null;
         networkGraph.deleteGraph();
         $('#menuSignin').show();
         $('#menuUser').hide();
         $('.welcome-overlay').show();
         $('.content').hide();
-        $('.main-menu .navbar-nav > .dropdown > .dropdown-toggle').attr('disabled', true)
+        $('.main-menu > .dropdown > .dropdown-toggle').attr('disabled', true)
             .addClass('disabled');
     }
 
@@ -1073,11 +1143,34 @@ function signout() {
 }
 
 function menuNewGraph() {
+    $('#newGraphName').val('');
     $('#newGraphModal').modal();
 }
-function newGraph() {
-    setUnselected();
-    networkGraph.deleteGraph(true);
+function newGraph(graphName) {
+    $.LoadingOverlay('show');
+    $.ajax("http://203.253.23.19:8080/graph", {
+        method: 'POST',
+        dataType: 'json',
+        data: JSON.stringify({
+            action: 'create',
+            email: user.email,
+            graph_name: graphName
+        }),
+        success: function (res) {
+            $.LoadingOverlay('hide');
+            console.log(res);
+            if (res['result'] == 'success') {
+                closeGraph();;
+                setGraphUIEnable(true);
+                $('#graphName').text(graphName);
+                nowGraphInfo = {graphId: res['graph_id'], graphName: graphName}
+            } else {
+                openAlertModal(res['message'], 'Open Graph Failure');
+            }
+        }, error: function (xhr, status, error) {
+            openAlertModal(xhr.statusText, 'Open Graph Failure');
+        }
+    });
 }
 
 function menuOpenGraph() {
@@ -1090,7 +1183,6 @@ function menuOpenGraph() {
         },
         success: function (res) {
             $.LoadingOverlay('hide');
-            console.log(res);
             if (res['result'] == 'success') {
                 graph_list = res['graph_list'];
 
@@ -1113,30 +1205,97 @@ function menuOpenGraph() {
         }
     })
 }
+function openGraph(graphId) {
+    $.LoadingOverlay('show');
+    $.ajax("http://203.253.23.19:8080/graph", {
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            email: user.email,
+            graph_id: graphId
+        },
+        success: function (res) {
+            $.LoadingOverlay('hide');
+            console.log(res);
+            if (res['result'] == 'success') {
+                closeGraph();
+                setGraphUIEnable(true);
+                $('#graphName').text(res['graph_name']);
+                nowGraphInfo = {graphId: graphId, graphName: res['graph_name']}
 
+                loadGraph(res);
+            } else {
+                openAlertModal(res['message'], 'Open Graph Failure');
+            }
+        }, error: function (xhr, status, error) {
+            openAlertModal(xhr.statusText, 'Open Graph Failure');
+        }
+    });
+}
 function menuCloseGraph() {
-
+    if ($(this).hasClass('disabled') || $(this).attr('disabled')) return;
+    openConfirmModal("Are you sure to close the graph? \nIf you didn't save the current graph, any unsaved changes will be discarded.",
+            "Close Graph Confirm", closeGraph);
 }
 function closeGraph() {
     setUnselected();
     networkGraph.deleteGraph(true);
-
+    setGraphUIEnable(false);
+    nowGraphInfo = null;
+    nodeTypes = {}
+    nodeTypeCnt = 0;
+    nodeConfidences = {}
+    updateNodeTypes();
+    updateEdgeList();
+    initManageNodeTypeUI();
+    initManageConfidenceUI();
 }
 
 function menuSaveGraph() {
+    if ($(this).hasClass('disabled') || $(this).attr('disabled')) return;
 
 }
 
 function menuSaveAsGraph() {
+    if ($(this).hasClass('disabled') || $(this).attr('disabled')) return;
+
     $('#saveAsGraphModal').modal();
 }
 
 function menuPrintGraph() {
+    if ($(this).hasClass('disabled') || $(this).attr('disabled')) return;
 }
 function menuAbout() {
 }
 
-function menuDeleteGraph() {
-    setUnselected();
-    networkGraph.deleteGraph(true);
+function loadGraph(graphData) {
+    nodeTypes = {};
+    nodeTypeCnt = 0;
+    var nodeTypeServerIds = {}
+    for (var i=0; i<graphData['node_type_set'].length; i++) {
+        var json = graphData['node_type_set'][i];
+        var nodeType = {name: json['node_type_name'],
+                        color: json['color'],
+                        serverId: json['node_type_id']};
+        nodeTypes[nodeTypeCnt] = nodeType;
+        nodeTypeServerIds[json['node_type_id']] = nodeTypeCnt;
+        nodeTypeCnt++;
+    }
+
+    nodeConfidences = {};
+    for (var i=0; i<graphData['confidence_set'].length; i++) {
+        var json = graphData['confidence_set'][i];
+        var sourceCid = nodeTypeServerIds[json['n1_type_id']];
+        var targetCid = nodeTypeServerIds[json['n2_type_id']];
+        var confidenceValue = json['confidence_value'];
+        if (!(sourceCid in nodeConfidences)) {
+            nodeConfidences[sourceCid] = {};
+        }
+        nodeConfidences[sourceCid][targetCid] = confidenceValue;
+    }
+
+    initManageNodeTypeUI();
+    initManageConfidenceUI();
+
+
 }
