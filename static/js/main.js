@@ -1298,7 +1298,32 @@ function closeGraph() {
 
 function menuSaveGraph() {
     if ($(this).hasClass('disabled') || $(this).attr('disabled')) return;
-    console.log(generateSaveGraphJson());
+    $.LoadingOverlay('show');
+    $.ajax("http://203.253.23.45:8080/graph", {
+        method: 'POST',
+        dataType: 'json',
+        data: JSON.stringify({
+            action: 'save',
+            email: user.email,
+            graph: generateSaveGraphJson()
+        }),
+        success: function (res) {
+            console.log(res);
+            $.LoadingOverlay('hide');
+            if (res['result'] == 'success') {
+                //save done
+                nodeTypeMap = res['nodetype_id_map'];
+                for (nodeTypeId in nodeTypes) {
+                    nodeTypes[nodeTypeId].serverId = nodeTypeMap[nodeTypeId];
+                }
+            } else {
+                openAlertModal(res['message'], 'Save Graph Failure');
+            }
+        }, error: function (xhr, status, error) {
+            $.LoadingOverlay('hide');
+            openAlertModal(xhr.statusText, 'Save Graph Failure');
+        }
+    });
 }
 
 function menuSaveAsGraph() {
