@@ -554,16 +554,7 @@ function initManageNodeTypeUI() {
         });
     });
 
-    $('#manageNodeTypeList').empty();
-    for (var typeid in nodeTypes) {
-        $('#manageNodeTypeList').append("<a href='#' class='list-group-item'>"
-            + "<span class='nodeTypeName'>" + nodeTypes[typeid]['name'] + "</span>"
-            + "<span class='typeColor type-color-bg type-color-" + nodeTypes[typeid]['color']
-            + "' data-color='" + nodeTypes[typeid]['color'] + "'>&nbsp;</span>"
-            + "<span class='typeId'>" + typeid + "</span></a>");
-        var appendedElem = $('#manageNodeTypeList').find('.list-group-item:last-of-type');
-        nodeTypeManageListItemAddClick(appendedElem);
-    }
+    updateManageNodeTypeUI();
 
     $('#btnAddNodeType').click(function() {
         var usedNames = [];
@@ -711,6 +702,19 @@ function initManageNodeTypeUI() {
     });
 }
 
+function updateManageNodeTypeUI() {
+    $('#manageNodeTypeList').empty();
+    for (var typeid in nodeTypes) {
+        $('#manageNodeTypeList').append("<a href='#' class='list-group-item'>"
+            + "<span class='nodeTypeName'>" + nodeTypes[typeid]['name'] + "</span>"
+            + "<span class='typeColor type-color-bg type-color-" + nodeTypes[typeid]['color']
+            + "' data-color='" + nodeTypes[typeid]['color'] + "'>&nbsp;</span>"
+            + "<span class='typeId'>" + typeid + "</span></a>");
+        var appendedElem = $('#manageNodeTypeList').find('.list-group-item:last-of-type');
+        nodeTypeManageListItemAddClick(appendedElem);
+    }
+}
+
 function nodeTypeManageListItemAddClick(elem) {
     elem.click(function() {
         if ($(this).hasClass('active')) {   //active->inactive
@@ -765,6 +769,10 @@ function initManageConfidenceUI() {
     };
     confidenceTable = new fixedTable($('#confidenceTable'));
 
+    updateManageConfidenceUI();
+}
+
+function updateManageConfidenceUI() {
     //set table from nodetypes
     $('#confidenceTable .fixedTable-header thead tr').empty();
     $('#confidenceTable .fixedTable-sidebar tbody').empty();
@@ -1265,8 +1273,8 @@ function closeGraph() {
     nodeConfidences = {}
     updateNodeTypes();
     updateEdgeList();
-    initManageNodeTypeUI();
-    initManageConfidenceUI();
+    updateManageNodeTypeUI();
+    updateManageConfidenceUI();
 }
 
 function menuSaveGraph() {
@@ -1300,7 +1308,7 @@ function loadGraph(graphData) {
         nodeTypeServerIds[json['node_type_id']] = nodeTypeCnt;
         nodeTypeCnt++;
     }
-    initManageNodeTypeUI();
+    updateManageNodeTypeUI();
 
     nodeConfidences = {};
     for (var i=0; i<graphData['confidence_set'].length; i++) {
@@ -1313,7 +1321,7 @@ function loadGraph(graphData) {
         }
         nodeConfidences[sourceCid][targetCid] = confidenceValue;
     }
-    initManageConfidenceUI();
+    updateManageConfidenceUI();
 
     var nodeServerIds = {}
     for (var i=0; i<graphData['node_set'].length; i++) {
@@ -1361,9 +1369,9 @@ function generateSaveGraphJson(saveAs=false) {
         json['node_type_client_id'] = nodeTypeId;
         if (!saveAs && 'serverId' in nodeType) {
             json['node_type_id'] = nodeType.serverId;
-            nodeTypeServerIds[nodeType.serverId] = nodeTypeId;
+            nodeTypeServerIds[nodeType.serverId] = parseInt(nodeTypeId);
         }
-        else json['node_type_id'] = null;
+        // else json['node_type_id'] = null;
         json['node_type_name'] = nodeType.name;
         json['color'] = nodeType.color;
         graphData['node_type_set'].push(json);
@@ -1377,10 +1385,10 @@ function generateSaveGraphJson(saveAs=false) {
             var json = {};
             if (!saveAs && 'serverId' in nodeTypes[sourceId]) {
                 json['n1_type_id'] = nodeTypes[sourceId].serverId;
-            } else json['n1_type_client_id'] = sourceId;
+            } else json['n1_type_client_id'] = parseInt(sourceId);
             if (!saveAs && 'serverId' in nodeTypes[targetId]) {
                 json['n2_type_id'] = nodeTypes[targetId].serverId;
-            } else json['n2_type_client_id'] = targetId;
+            } else json['n2_type_client_id'] = parseInt(targetId);
             json['confidence_value'] = parseFloat(confidenceValue);
             graphData['confidence_set'].push(json);
         }
@@ -1397,15 +1405,13 @@ function generateSaveGraphJson(saveAs=false) {
         if (!saveAs && 'serverId' in nodeData) {
             json['node_id'] = nodeData.serverId;
             nodeServerIds[nodeData.serverId] = nodeData;
-        } else {
-            json['node_id'] = null;
-        }
+        } //else json['node_id'] = null;
         json['node_client_id'] = nodeData.id;
         json['node_name'] = nodeData.title;
         if (nodeData.type != null) {
             if (!saveAs && 'serverId' in nodeTypes[nodeData.type]) {
                 json['node_type_id'] = nodeTypes[nodeData.type].serverId;
-            } else json['node_type_client_id'] = nodeData.type;
+            } else json['node_type_client_id'] = parseInt(nodeData.type);
         } else json['node_type_id'] = null;
         json['x'] = nodeData.x;
         json['y'] = nodeData.y;
