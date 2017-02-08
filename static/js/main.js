@@ -235,6 +235,9 @@ function setSelectedNode(d3Node, nodeData) {
     $('.menuDeleteEdge').addClass('disabled');
 
     $('#subMenuNodeName').val(nodeData.title);
+    if ('domainId' in nodeData && nodeData.domainId != null)
+        $('#subMenuDomainId').val(nodeData.domainId);
+    else $('#subMenuDomainId').val('');
     if (nodeData.type != null) {
         $('#subMenuNodeType').removeClass('unselected').html(nodeTypeToSubMenuHtml(nodeData.type));
     } else {
@@ -296,6 +299,7 @@ function setUnselected(graphUnselect) {
     $('.menuDeleteEdge').addClass('disabled');
 
     $('#subMenuNodeName').val('');
+    $('#subMenuDomainId').val('');
     $('#subMenuNodeType').addClass('unselected').text('');
     $('#subMenuEdgeInfluence').val('');
     $('.subMenuEdgeNode').addClass('unselected').text('');
@@ -344,6 +348,10 @@ function editNode() {
         selectedNode.nodeData.title = $('#subMenuNodeName').val();
         // selectedNode.nodeData.type = $('#subMenuNodeType .nodeTypeName').text();
         selectedNode.nodeData.type = parseInt($('#subMenuNodeType .nodeTypeId').text());
+        var domainId = $('#subMenuDomainId').val();
+        if (/\S/.test(domainId)) selectedNode.nodeData.domainId = domainId;
+        else selectedNode.nodeData.domainId = null;
+
         networkGraph.changeNodeTitle(selectedNode.d3Node, selectedNode.nodeData.title);
         if (origianlType != selectedNode.nodeData.type) {
             networkGraph.updateNodeType(selectedNode.d3Node);
@@ -1055,7 +1063,7 @@ function setGraphUIEnable(enable) {
 
 function getSesison() {
     $.LoadingOverlay('show');
-    $.ajax("http://203.253.23.19:8080/session", {
+    $.ajax("http://203.253.23.45:8080/session", {
         method: 'GET',
         dataType: 'json',
         success: function (res) {
@@ -1082,7 +1090,7 @@ function signin() {
     var password = $('#signinPassword').val();
 
     $.LoadingOverlay('show');
-    $.ajax("http://203.253.23.19:8080/session", {
+    $.ajax("http://203.253.23.45:8080/session", {
         method: 'POST',
         dataType: 'json',
         data: JSON.stringify({
@@ -1131,7 +1139,7 @@ function signout() {
     }
 
     $.LoadingOverlay('show');
-    $.ajax("http://203.253.23.19:8080/session", {
+    $.ajax("http://203.253.23.45:8080/session", {
         method: 'POST',
         dataType: 'json',
         data: JSON.stringify({
@@ -1148,7 +1156,7 @@ function menuNewGraph() {
 }
 function newGraph(graphName) {
     $.LoadingOverlay('show');
-    $.ajax("http://203.253.23.19:8080/graph", {
+    $.ajax("http://203.253.23.45:8080/graph", {
         method: 'POST',
         dataType: 'json',
         data: JSON.stringify({
@@ -1168,14 +1176,22 @@ function newGraph(graphName) {
                 openAlertModal(res['message'], 'Open Graph Failure');
             }
         }, error: function (xhr, status, error) {
+            $.LoadingOverlay('hide');
             openAlertModal(xhr.statusText, 'Open Graph Failure');
         }
     });
 }
 
 function menuOpenGraph() {
+    //test
+    // closeGraph();
+    // setGraphUIEnable(true);
+    // $('#graphName').text('asdf');
+    // nowGraphInfo = {graphId: 1, graphName: 'asdf'}
+    // return;
+
     $.LoadingOverlay('show');
-    $.ajax("http://203.253.23.19:8080/graph", {
+    $.ajax("http://203.253.23.45:8080/graph", {
         method: 'GET',
         dataType: 'json',
         data: {
@@ -1201,13 +1217,14 @@ function menuOpenGraph() {
                 openAlertModal(res['message'], 'Retrive Graph List Failure');
             }
         }, error: function(xhr, status, error) {
+            $.LoadingOverlay('hide');
             openAlertModal(xhr.statusText, 'Retrive Graph List Failure');
         }
     })
 }
 function openGraph(graphId) {
     $.LoadingOverlay('show');
-    $.ajax("http://203.253.23.19:8080/graph", {
+    $.ajax("http://203.253.23.45:8080/graph", {
         method: 'GET',
         dataType: 'json',
         data: {
@@ -1215,8 +1232,8 @@ function openGraph(graphId) {
             graph_id: graphId
         },
         success: function (res) {
-            $.LoadingOverlay('hide');
             console.log(res);
+            $.LoadingOverlay('hide');
             if (res['result'] == 'success') {
                 closeGraph();
                 setGraphUIEnable(true);
@@ -1228,6 +1245,7 @@ function openGraph(graphId) {
                 openAlertModal(res['message'], 'Open Graph Failure');
             }
         }, error: function (xhr, status, error) {
+            $.LoadingOverlay('hide');
             openAlertModal(xhr.statusText, 'Open Graph Failure');
         }
     });
@@ -1253,13 +1271,14 @@ function closeGraph() {
 
 function menuSaveGraph() {
     if ($(this).hasClass('disabled') || $(this).attr('disabled')) return;
-
+    console.log(generateSaveGraphJson());
 }
 
 function menuSaveAsGraph() {
     if ($(this).hasClass('disabled') || $(this).attr('disabled')) return;
 
     $('#saveAsGraphModal').modal();
+    console.log(generateSaveGraphJson(true));
 }
 
 function menuPrintGraph() {
@@ -1281,6 +1300,7 @@ function loadGraph(graphData) {
         nodeTypeServerIds[json['node_type_id']] = nodeTypeCnt;
         nodeTypeCnt++;
     }
+    initManageNodeTypeUI();
 
     nodeConfidences = {};
     for (var i=0; i<graphData['confidence_set'].length; i++) {
@@ -1293,9 +1313,118 @@ function loadGraph(graphData) {
         }
         nodeConfidences[sourceCid][targetCid] = confidenceValue;
     }
-
-    initManageNodeTypeUI();
     initManageConfidenceUI();
 
+    var nodeServerIds = {}
+    for (var i=0; i<graphData['node_set'].length; i++) {
+        var json = graphData['node_set'][i];
+        var newNodeData = {};
+        newNodeData.serverId = json['node_id'];
+        if ('domain_id' in json)
+            newNodeData.domainId = json['domain_id'];
+        else newNodeData.domainId = null;
+        newNodeData.title = json['node_name'];
+        if ('node_type_id' in json)
+            newNodeData.type = nodeTypeServerIds[json['node_type_id']];
+        else newNodeData.type = null;
+        newNodeData.x = json['x'];
+        newNodeData.y = json['y'];
+        networkGraph.insertNode(newNodeData);
+        nodeServerIds[json['node_id']] = newNodeData;
+    }
+    updateNodeTypes();
 
+    for (var i=0; i<graphData['edge_set'].length; i++) {
+        var json = graphData['edge_set'][i];
+        var sourceNode = nodeServerIds[json['n1_id']];
+        var targetNode = nodeServerIds[json['n2_id']];
+        var influence = json['influence_value'];
+        networkGraph.createEdge(sourceNode, targetNode, influence);
+    }
+    updateEdgeList();
+    networkGraph.updateGraph();
+}
+
+function generateSaveGraphJson(saveAs=false) {
+    if (saveAs == undefined || saveAs == null) saveAs=false;
+    var graphData = {};
+    if (!saveAs) {
+        graphData['graph_id'] = nowGraphInfo.graphId;
+        graphData['graph_name'] = nowGraphInfo.graphName;
+    }
+
+    var nodeTypeServerIds = {};
+    graphData['node_type_set'] = [];
+    for (var nodeTypeId in nodeTypes) {
+        var nodeType = nodeTypes[nodeTypeId];
+        var json = {};
+        json['node_type_client_id'] = nodeTypeId;
+        if (!saveAs && 'serverId' in nodeType) {
+            json['node_type_id'] = nodeType.serverId;
+            nodeTypeServerIds[nodeType.serverId] = nodeTypeId;
+        }
+        else json['node_type_id'] = null;
+        json['node_type_name'] = nodeType.name;
+        json['color'] = nodeType.color;
+        graphData['node_type_set'].push(json);
+    }
+
+    graphData['confidence_set'] = [];
+    for (var sourceId in nodeConfidences) {
+        var nodeConfidence = nodeConfidences[sourceId];
+        for (targetId in nodeConfidence) {
+            var confidenceValue = nodeConfidence[targetId];
+            var json = {};
+            if (!saveAs && 'serverId' in nodeTypes[sourceId]) {
+                json['n1_type_id'] = nodeTypes[sourceId].serverId;
+            } else json['n1_type_client_id'] = sourceId;
+            if (!saveAs && 'serverId' in nodeTypes[targetId]) {
+                json['n2_type_id'] = nodeTypes[targetId].serverId;
+            } else json['n2_type_client_id'] = targetId;
+            json['confidence_value'] = parseFloat(confidenceValue);
+            graphData['confidence_set'].push(json);
+        }
+    }
+
+    nodeServerIds = {};
+    graphData['node_set'] = [];
+    for (var i=0; i<networkGraph.nodes.length; i++) {
+        var nodeData = networkGraph.nodes[i];
+        var json = {}
+        if ('domainId' in nodeData)
+            json['domain_id'] = nodeData.domainId;
+        else json['domain_id'] = null;
+        if (!saveAs && 'serverId' in nodeData) {
+            json['node_id'] = nodeData.serverId;
+            nodeServerIds[nodeData.serverId] = nodeData;
+        } else {
+            json['node_id'] = null;
+        }
+        json['node_client_id'] = nodeData.id;
+        json['node_name'] = nodeData.title;
+        if (nodeData.type != null) {
+            if (!saveAs && 'serverId' in nodeTypes[nodeData.type]) {
+                json['node_type_id'] = nodeTypes[nodeData.type].serverId;
+            } else json['node_type_client_id'] = nodeData.type;
+        } else json['node_type_id'] = null;
+        json['x'] = nodeData.x;
+        json['y'] = nodeData.y;
+        graphData['node_set'].push(json);
+    }
+
+    graphData['edge_set'] = [];
+    for (var i=0; i<networkGraph.edges.length; i++) {
+        var edgeData = networkGraph.edges[i];
+        var json = {}
+        if (!saveAs && 'serverId' in edgeData.source) {
+            json['n1_id'] = edgeData.source.serverId;
+        } else json['n1_client_id'] = edgeData.source.id;
+        if (!saveAs && 'serverId' in edgeData.target) {
+            json['n2_id'] = edgeData.target.serverId;
+        } else json['n2_client_id'] = edgeData.target.id;
+        json['influence_value'] = parseFloat(edgeData.name);
+        graphData['edge_set'].push(json);
+    }
+
+    return graphData;
 }

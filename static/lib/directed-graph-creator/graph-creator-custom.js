@@ -818,7 +818,7 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         this.insertEdgeName(d3pathG, edgeData);
     }
 
-    GraphCreator.prototype.createNode = function() {
+    GraphCreator.prototype.createNode = function(updating=true) {
         var thisGraph = this;
 
         var gGraph = thisGraph.svg.select("g.graph");
@@ -842,13 +842,23 @@ document.onload = (function(d3, saveAs, Blob, undefined){
         var newNodeData = {id: thisGraph.idct++, title: global_consts.defaultTitle,
                            type: null, x: pX, y: pY};
         thisGraph.nodes.push(newNodeData);
-        thisGraph.updateGraph();
+
+        if (updating==undefined || updating==null)
+            updating = true;
+        if (updating) thisGraph.updateGraph();
 
         // var d3Node = thisGraph.circles.filter(function(cd) {
         //     return cd.id === newNodeData.id;
         // });
         // thisGraph.replaceSelectNode(d3Node, newNodeData);
 
+        return newNodeData;
+    }
+
+    GraphCreator.prototype.insertNode = function(newNodeData) {
+        var thisGraph = this;
+        newNodeData.id = thisGraph.idct++;
+        thisGraph.nodes.push(newNodeData);
         return newNodeData;
     }
 
