@@ -1,3 +1,6 @@
+.navbar > .top-menu {
+    width: 100%;
+}
 .navbar.navbar-dark {
     background-color: #424242;
     border: none;
