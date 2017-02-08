@@ -348,8 +348,27 @@ function editNode() {
         selectedNode.nodeData.title = $('#subMenuNodeName').val();
         // selectedNode.nodeData.type = $('#subMenuNodeType .nodeTypeName').text();
         selectedNode.nodeData.type = parseInt($('#subMenuNodeType .nodeTypeId').text());
+
         var domainId = $('#subMenuDomainId').val();
-        if (/\S/.test(domainId)) selectedNode.nodeData.domainId = domainId;
+        if (/\S/.test(domainId)) {
+            //check domain
+            var duplicated = false;
+            for (var i=0; i<networkGraph.nodes.length; i++) {
+                var nodeData = networkGraph.nodes[i];
+                if (selectedNode.nodeData == nodeData) continue;
+                if ('domainId' in nodeData) {
+                    if (nodeData['domainId'] == domainId) {
+                        duplicated = true;
+                        break;
+                    }
+                }
+            }
+            if(duplicated) {
+                openAlertModal("The domain ID is duplicated.", "Edit Node Failure")
+            } else {
+                selectedNode.nodeData.domainId = domainId;
+            }
+        }
         else selectedNode.nodeData.domainId = null;
 
         networkGraph.changeNodeTitle(selectedNode.d3Node, selectedNode.nodeData.title);
